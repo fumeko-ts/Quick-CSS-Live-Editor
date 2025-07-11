@@ -1,36 +1,32 @@
 {
   "Panels": {
-    "backgroundColor": "red, green, blue, #fff, rgba(0,0,0,0.5), transparent",
-    "border": "1px solid black, 2px dashed red, none",
-    "padding": "0, 5px, 10px 15px",
-    "margin": "0, 10px, 5px 20px",
-    "boxShadow": "0 0 5px black, inset 0 0 10px blue",
-    "borderRadius": "0, 5px, 50%",
-    "opacity": "0.0 to 1.0"
+    "backgroundColor": "black (string), white (string), red (string), green (string), blue (string), cyan (string), magenta (string), yellow (string), gray (string), lime (string), maroon (string), navy (string), olive (string), orange (string), purple (string), silver (string), teal (string), aqua (string), fuchsia (string), coral (string), gold (string), pink (string), violet (string), indigo (string), beige (string), brown (string), salmon (string), tan (string), turquoise (string), plum (string), khaki (string), lavender (string), hex (string), rgba() (string), transparent (keyword)",
+    "border": "1px solid black (string), 2px dashed red (string), none (keyword)",
+    "padding": "0 (number), 10px (string)",
+    "margin": "0 (number), 10px (string)",
+    "boxShadow": "0 0 5px black (string), inset 0 0 10px blue (string)",
+    "borderRadius": "0 (number), 5px (string), 50% (string)",
+    "opacity": "0.0 to 1.0 (number)"
   },
   "Text": {
-    "color": "red, #333, rgba(255,0,0,0.8)",
-    "fontSize": "12, 16, 1.5em, 100%",
-    "fontWeight": "normal, bold, 400, 700",
-    "lineHeight": "normal, 1.2, 20px",
-    "textShadow": "1px 1px 2px black, none",
-    "textAlign": "left, center, right, justify",
-    "fontStyle": "normal, italic, oblique",
-    "letterSpacing": "normal, 2px, -1px",
-    "wordSpacing": "normal, 5px"
+    "color": "black (string), white (string), hex (string), rgba() (string)",
+    "fontSize": "12px (string), 16px (string), 1em (string)",
+    "fontWeight": "normal (keyword), bold (keyword)",
+    "lineHeight": "normal (keyword), 1.5 (number)",
+    "textShadow": "1px 1px 2px black (string), none (keyword)",
+    "textAlign": "left (keyword), center (keyword), right (keyword)",
+    "fontStyle": "normal (keyword), italic (keyword)"
   },
   "Links": {
-    "color": "blue, #00f, rgba(0,0,255,0.8)",
-    "textDecoration": "none, underline, overline, line-through",
-    "hoverColor": "red, green, blue, #f00",
-    "fontWeight": "normal, bold",
-    "fontSize": "12, 14, 16"
+    "color": "blue (string), hex (string), rgba() (string)",
+    "textDecoration": "none (keyword), underline (keyword)",
+    "hoverColor": "red (string), hex (string)",
+    "fontWeight": "normal (keyword), bold (keyword)"
   },
   "Images": {
-    "width": "100, 200, 50%",
-    "height": "100, 200, auto",
-    "borderRadius": "0, 10px, 50%",
-    "opacity": "0.5 to 1.0",
-    "boxShadow": "0 0 10px black"
+    "width": "100px (string), 50% (string)",
+    "height": "auto (keyword), 100px (string)",
+    "borderRadius": "0 (number), 10px (string)",
+    "opacity": "0.5 to 1.0 (number)"
   }
 }
