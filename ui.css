@@ -152,3 +152,30 @@
   cursor: default;
   box-sizing: border-box;
 }
+
+#element-styler-info-tooltip {
+  /* remove writing mode styles if any */
+  writing-mode: initial !important;
+  text-orientation: initial !important;
+  white-space: pre-line;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+  user-select: none;
+}
+
+#element-styler-hint-box {
+  writing-mode: initial !important;
+  text-orientation: initial !important;
+  white-space: pre-line;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+  user-select: none;
+  /* keep rest of your styling */
+}
+
+#cssOutput {
+  white-space: pre; /* Preserve formatting */
+  font-family: monospace;
+}
