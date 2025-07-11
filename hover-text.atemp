@@ -1,0 +1,23 @@
+{
+  "Panels": {
+    "backgroundColor": "red, green, blue, #fff, rgba(0,0,0,0.5), transparent",
+    "border": "1px solid black, 2px dashed red, none",
+    "padding": "0, 5px, 10px 15px",
+    "margin": "0, 10px, 5px 20px",
+    "boxShadow": "0 0 5px black, inset 0 0 10px blue",
+    "borderRadius": "0, 5px, 50%",
+    "opacity": "0.0 to 1.0"
+  },
+  "Text": {
+    "color": "red, #333, rgba(255,0,0,0.8)",
+    "fontSize": "12, 16, 1.5em, 100%",
+    "fontWeight": "normal, bold, 400, 700",
+    "lineHeight": "normal, 1.2, 20px",
+    "textShadow": "1px 1px 2px black, none",
+    "textAlign": "left, center, right, justify",
+    "fontStyle": "normal, italic, oblique",
+    "letterSpacing": "normal, 2px, -1px",
+    "wordSpacing": "normal, 5px"
+  },
+  "...": {}
+}
