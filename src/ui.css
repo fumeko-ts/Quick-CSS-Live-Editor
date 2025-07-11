@@ -8,6 +8,71 @@
   box-shadow: 0 0 6px 1px rgba(79, 195, 247, 0.75);
   transition: box-shadow 0.15s ease;
 }
+:root {
+  --dark-bg: #1e1e2e;
+  --darker-bg: #181825;
+  --dark-text: #cdd6f4;
+  --dark-accent: #89b4fa;
+  --dark-hover: #313244;
+  --dark-active: #45475a;
+  --dark-border: #585b70;
+}
+
+#tabButtons {
+  display: flex;
+  gap: 4px;
+  padding: 8px;
+  background-color: var(--darker-bg);
+  border-radius: 8px;
+  border: 1px solid var(--dark-border);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+#tabButtons button {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  background-color: transparent;
+  color: var(--dark-text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+#tabButtons button:hover {
+  background-color: var(--dark-hover);
+  transform: translateY(-1px);
+}
+
+#tabButtons button.active {
+  background-color: var(--dark-active);
+  color: var(--dark-accent);
+  font-weight: 600;
+}
+
+/* Optional: Add a subtle indicator for active tab */
+#tabButtons button.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 2px;
+  background-color: var(--dark-accent);
+  border-radius: 2px;
+}
+
+/* Optional: Focus styles for accessibility */
+#tabButtons button:focus-visible {
+  outline: 2px solid var(--dark-accent);
+  outline-offset: 2px;
+}
 
 #element-styler-info-tooltip {
   position: fixed;
