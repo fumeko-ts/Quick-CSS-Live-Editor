@@ -1,7 +1,7 @@
 (() => {
   const CSS_URL = 'https://raw.githubusercontent.com/fumeko-ts/Quick-CSS-Live-Editor/main/src/ui.css';
   const HOVER_HINTS_URL = 'https://raw.githubusercontent.com/fumeko-ts/Quick-CSS-Live-Editor/main/src/hover-text.atemp';
-  window.HOVER_HINTS_URL;
+  window.HOVER_HINTS_URL = HOVER_HINTS_URL;
   let styleOptions = {},
     selected = null,
     underCursorElements = [],
