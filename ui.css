@@ -1,11 +1,12 @@
 #element-styler-overlay {
   position: absolute;
   border: 2px solid #4fc3f7;
-  border-radius: 3px;
+  border-radius: 4px;
   pointer-events: none;
   z-index: 2147483647;
   display: none;
-  box-shadow: 0 0 0 1px rgba(0,0,0,0.5);
+  box-shadow: 0 0 6px 1px rgba(79, 195, 247, 0.75);
+  transition: box-shadow 0.15s ease;
 }
 
 #element-styler-info-tooltip {
@@ -13,12 +14,12 @@
   top: 0;
   left: 0;
   max-width: 280px;
-  background-color: rgba(0,0,0,0.75);
+  background-color: rgba(15, 15, 15, 0.85);
   color: #4fc3f7;
   font-family: 'Minecraftia', monospace, monospace;
   font-size: 12px;
-  padding: 4px 8px;
-  border-radius: 4px;
+  padding: 6px 10px;
+  border-radius: 6px;
   pointer-events: none;
   user-select: none;
   white-space: pre-line;
@@ -26,122 +27,163 @@
   transform: translate(10px, 10px);
   transition: opacity 0.15s ease;
   opacity: 0;
+  box-shadow: 0 0 10px #4fc3f7aa;
 }
 
 #element-styler-panel {
   position: fixed;
   top: 20px;
   right: 20px;
-  background: #2d2d2d;
-  color: #e0e0e0;
-  padding: 12px;
-  font-family: 'Segoe UI', Roboto, sans-serif;
-  font-size: 13px;
-  border-radius: 8px;
+  background: #1f1f1f;
+  color: #d0d0d0;
+  padding: 16px 18px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 14px;
+  border-radius: 10px;
   border: 1px solid #444;
   z-index: 2147483647;
-  min-width: 320px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  min-width: 340px;
+  max-width: 380px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
   user-select: none;
+  display: flex;
+  flex-direction: column;
 }
 
 #element-styler-panel #tabButtons {
-  margin: 10px 0 12px;
+  margin: 12px 0 16px;
   display: flex;
+  gap: 8px;
+  user-select: none;
 }
 
 #element-styler-panel #tabButtons button {
-  margin-right: 6px;
-  background: #2d2d2d;
-  color: #e0e0e0;
-  border: 1px solid #444;
-  border-radius: 4px;
-  padding: 4px 10px;
+  flex: 1;
+  background: #282828;
+  color: #d0d0d0;
+  border: 1.5px solid #555;
+  border-radius: 6px;
+  padding: 6px 12px;
   cursor: pointer;
-  transition: background 0.2s;
-  user-select: none;
+  font-weight: 600;
+  font-size: 13px;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 
 #element-styler-panel #tabButtons button.active,
 #element-styler-panel #tabButtons button:hover {
-  background: #3a3a3a;
+  background: #3f7fcf;
+  color: #fff;
+  border-color: #3f7fcf;
+  box-shadow: 0 0 8px #3f7fcf88;
 }
 
 #element-styler-panel #tabContent {
-  margin-bottom: 12px;
+  margin-bottom: 16px;
   max-height: 360px;
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #4fc3f7 #1f1f1f;
 }
 
 #element-styler-panel input[data-style] {
   width: 100%;
-  background: #252525;
-  border: 1px solid #444;
-  border-radius: 4px;
-  padding: 6px;
-  color: #e0e0e0;
-  font-family: monospace;
-  font-size: 13px;
+  background: #222;
+  border: 1.5px solid #555;
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: #d0d0d0;
+  font-family: 'Consolas', monospace, monospace;
+  font-size: 14px;
   box-sizing: border-box;
+  transition: border-color 0.25s ease, background-color 0.25s ease;
+}
+
+#element-styler-panel input[data-style]:focus {
+  outline: none;
+  background: #1a1a1a;
+  border-color: #4fc3f7;
+  box-shadow: 0 0 8px #4fc3f7aa;
+  color: #aeefff;
 }
 
 #element-styler-panel label {
   display: block;
-  font-size: 12px;
-  margin-bottom: 4px;
+  font-size: 13px;
+  margin-bottom: 6px;
   cursor: default;
   user-select: none;
+  color: #bbb;
+  font-weight: 500;
 }
 
 #element-styler-panel label[for="toggleTransparent"] {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: 10px;
+  margin-bottom: 14px;
   cursor: pointer;
+  font-weight: 600;
+  color: #88c0f7;
 }
 
-#element-styler-panel #applyStyle {
+#element-styler-panel #applyStyle,
+#element-styler-panel #resetStyle {
   margin-top: 8px;
   width: 100%;
   background: #4fc3f7;
   color: #000;
   border: none;
-  border-radius: 4px;
-  padding: 6px;
-  font-weight: 500;
+  border-radius: 6px;
+  padding: 10px 0;
+  font-weight: 700;
+  font-size: 14px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background-color 0.3s ease;
+  user-select: none;
 }
 
 #element-styler-panel #applyStyle:hover {
-  background: #40b0e0;
+  background: #40a7d9;
+}
+
+#element-styler-panel #resetStyle {
+  background: #f15a5a;
+  margin-left: 0;
+  margin-top: 6px;
+}
+
+#element-styler-panel #resetStyle:hover {
+  background: #d04141;
 }
 
 #element-styler-panel #cssOutput {
   width: 100%;
-  height: 120px;
-  background: #252525;
-  color: #e0e0e0;
-  border: 1px solid #444;
-  border-radius: 4px;
-  padding: 6px;
-  font-family: monospace;
-  white-space: pre;
+  height: 140px;
+  background: #222;
+  color: #d0d0d0;
+  border: 1.5px solid #555;
+  border-radius: 6px;
+  padding: 10px;
+  font-family: 'Consolas', monospace, monospace;
+  white-space: pre-wrap;
   resize: vertical;
   box-sizing: border-box;
+  margin-top: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: #4fc3f7 #222;
 }
 
 #element-styler-hint-box {
   position: fixed;
   top: 0;
   left: 0;
-  background-color: rgba(40, 40, 40, 0.95);
-  color: #a0c8f0;
+  background-color: rgba(24, 24, 24, 0.96);
+  color: #9fc6f7;
   font-family: 'Segoe UI', monospace, monospace;
   font-size: 12px;
-  padding: 6px 10px;
-  border-radius: 4px;
+  padding: 8px 14px;
+  border-radius: 6px;
   max-height: 150px;
   overflow-y: auto;
   white-space: normal;
@@ -150,4 +192,5 @@
   user-select: none;
   cursor: default;
   box-sizing: border-box;
+  box-shadow: 0 0 15px #4fc3f7cc;
 }
