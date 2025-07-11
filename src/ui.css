@@ -13,7 +13,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  max-width: 280px;
+  max-width: min(280px, 90vw);
   background-color: rgba(15, 15, 15, 0.85);
   color: #4fc3f7;
   font-family: 'Minecraftia', monospace, monospace;
@@ -42,13 +42,21 @@
   border-radius: 10px;
   border: 1px solid #444;
   z-index: 2147483647;
-  min-width: 340px;
-  max-width: min(380px, calc(100vw - 40px));
+  width: min(380px, calc(100vw - 40px));
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
   user-select: none;
   display: flex;
   flex-direction: column;
+  max-height: calc(100vh - 40px);
   box-sizing: border-box;
+}
+
+#element-styler-panel .panel-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 #element-styler-panel #tabButtons {
@@ -59,52 +67,11 @@
   flex-wrap: wrap;
 }
 
-#element-styler-panel #tabButtons button {
-  flex: 1;
-  background: #282828;
-  color: #d0d0d0;
-  border: 1.5px solid #555;
-  border-radius: 6px;
-  padding: 6px 12px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 13px;
-  transition: background-color 0.25s ease, border-color 0.25s ease;
-  min-width: 60px;
-}
-
-#element-styler-panel #tabButtons button.active,
-#element-styler-panel #tabButtons button:hover {
-  background: #3f7fcf;
-  color: #fff;
-  border-color: #3f7fcf;
-  box-shadow: 0 0 8px #3f7fcf88;
-}
-
 #element-styler-panel #tabContent {
   margin-bottom: 16px;
-  max-height: min(360px, 50vh);
   overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #4fc3f7 #1f1f1f;
-}
-
-/* Scrollbar styling for WebKit browsers */
-#element-styler-panel #tabContent::-webkit-scrollbar,
-#element-styler-panel #cssOutput::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-#element-styler-panel #tabContent::-webkit-scrollbar-track,
-#element-styler-panel #cssOutput::-webkit-scrollbar-track {
-  background: #1f1f1f;
-}
-
-#element-styler-panel #tabContent::-webkit-scrollbar-thumb,
-#element-styler-panel #cssOutput::-webkit-scrollbar-thumb {
-  background-color: #4fc3f7;
-  border-radius: 4px;
+  flex: 1;
+  min-height: 0;
 }
 
 #element-styler-panel input[data-style] {
@@ -193,7 +160,7 @@
   margin-top: 12px;
   scrollbar-width: thin;
   scrollbar-color: #4fc3f7 #222;
-  max-height: 30vh;
+  max-height: 200px;
 }
 
 #element-styler-hint-box {
@@ -237,51 +204,41 @@
   font-family: 'Consolas', monospace;
 }
 
+/* Scrollbar styling */
+#element-styler-panel #tabContent::-webkit-scrollbar,
+#element-styler-panel #cssOutput::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+#element-styler-panel #tabContent::-webkit-scrollbar-track,
+#element-styler-panel #cssOutput::-webkit-scrollbar-track {
+  background: #1f1f1f;
+}
+
+#element-styler-panel #tabContent::-webkit-scrollbar-thumb,
+#element-styler-panel #cssOutput::-webkit-scrollbar-thumb {
+  background-color: #4fc3f7;
+  border-radius: 4px;
+}
+
 /* Responsive adjustments */
 @media (max-width: 600px) {
   #element-styler-panel {
     right: 10px;
     left: 10px;
-    max-width: calc(100vw - 20px);
-    min-width: auto;
-    padding: 12px 14px;
+    width: calc(100vw - 20px);
+    top: 10px;
+    max-height: calc(100vh - 20px);
   }
-  
+
   #element-styler-panel #tabButtons {
-    flex-direction: row;
     overflow-x: auto;
     padding-bottom: 8px;
+    scrollbar-width: none;
   }
-  
-  #element-styler-panel #tabButtons button {
-    flex: none;
-    padding: 6px 10px;
-    font-size: 12px;
-  }
-  
-  #element-styler-panel #cssOutput {
-    height: 100px;
-  }
-}
 
-/* Additional styling for theme tab buttons */
-#element-styler-panel #tabContent button {
-  display: inline-block;
-  background: #2a2a2a;
-  color: #eee;
-  border: 1px solid #555;
-  border-radius: 5px;
-  padding: 8px 14px;
-  margin: 6px 6px 0 0;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 13px;
-  transition: all 0.25s ease;
-}
-
-#element-styler-panel #tabContent button:hover {
-  background: #3f7fcf;
-  color: #fff;
-  border-color: #3f7fcf;
-  box-shadow: 0 0 6px #3f7fcf88;
+  #element-styler-panel #tabButtons::-webkit-scrollbar {
+    display: none;
+  }
 }
