@@ -22,28 +22,62 @@
     --dark-glow: rgba(79, 195, 247, 0.2);
   }
 
-  /* Main Panel Styling */
+  /* Main Panel Styling - Updated for slide-out */
   #element-styler-panel {
     position: fixed;
-    top: 20px;
-    right: 20px;
+    top: 0;
+    right: -400px;
+    height: 100vh;
     background: var(--darker-bg);
     color: var(--dark-text);
-    padding: 16px 18px;
+    padding: 20px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-size: 14px;
-    border-radius: 12px;
-    border: 1px solid var(--dark-border);
+    border-left: 1px solid var(--dark-border);
     z-index: 2147483647;
-    width: min(380px, calc(100vw - 40px));
+    width: 380px;
     box-shadow: 
-      0 6px 18px rgba(0, 0, 0, 0.5),
+      -6px 0 18px rgba(0, 0, 0, 0.5),
       inset 0 1px 1px rgba(255, 255, 255, 0.05);
     user-select: none;
     display: flex;
     flex-direction: column;
-    max-height: calc(100vh - 40px);
     box-sizing: border-box;
+    transition: right 0.3s ease;
+    overflow-y: auto;
+  }
+
+  #element-styler-panel.panel-open {
+    right: 0;
+  }
+
+  #element-styler-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background: var(--darker-bg);
+    color: var(--dark-text);
+    border-radius: 50%;
+    border: 1px solid var(--dark-border);
+    z-index: 2147483647;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  #element-styler-toggle:hover {
+    background: var(--dark-hover);
+    transform: scale(1.1);
+  }
+
+  #element-styler-toggle::before {
+    content: "⚙️";
+    font-size: 20px;
   }
 
   #element-styler-panel .panel-content {
@@ -339,12 +373,12 @@
   /* Responsive */
   @media (max-width: 600px) {
     #element-styler-panel {
-      right: 10px;
-      left: 10px;
-      width: calc(100vw - 20px);
-      top: 10px;
-      max-height: calc(100vh - 20px);
-      padding: 12px;
+      width: 90vw;
+      right: -90vw;
+    }
+    
+    #element-styler-panel.panel-open {
+      right: 0;
     }
 
     #tabButtons {
@@ -439,10 +473,15 @@
     const infoTooltip = Object.assign(document.createElement('div'), {
       id: 'element-styler-info-tooltip'
     });
+    
+    // Create toggle button
+    const toggleBtn = Object.assign(document.createElement('div'), {
+      id: 'element-styler-toggle'
+    });
+    
     const panel = document.createElement('div');
     panel.id = 'element-styler-panel';
     panel.innerHTML = `
-      <div class="title">Element Styler</div>
       <div id="tabButtons"></div>
       <div id="tabContent"></div>
       <label style="display:block; margin-top:8px;" for="toggleTransparent">
@@ -466,12 +505,19 @@
       id: 'element-styler-hint-box'
     });
 
-    [overlay, infoTooltip, panel, hintBox].forEach(el => document.body.appendChild(el));
+    [overlay, infoTooltip, toggleBtn, panel, hintBox].forEach(el => document.body.appendChild(el));
+    
+    // Toggle panel visibility
+    toggleBtn.addEventListener('click', () => {
+      panel.classList.toggle('panel-open');
+    });
+    
     return {
       overlay,
       infoTooltip,
       panel,
-      hintBox
+      hintBox,
+      toggleBtn
     };
   }
 
@@ -893,6 +939,7 @@
     renderTab(panel);
     setupEventListeners(overlay, infoTooltip, panel, hintBox);
   })();
+  
 function applyTransformScale(el, scale) {
   if (!el) return;
 
@@ -1027,5 +1074,94 @@ function addExportButton() {
 
 setTimeout(addExportButton, 500);
 
+  const applyCSSOutputToPage = () => {
+    const css = document.getElementById('cssOutput')?.value;
+    if (!css) return;
 
+    let styleTag = document.getElementById('element-styler-output-style');
+    if (!styleTag) {
+      styleTag = document.createElement('style');
+      styleTag.id = 'element-styler-output-style';
+      document.head.appendChild(styleTag);
+    }
+
+    styleTag.textContent = css;
+  };
+
+  const injectBtn = document.createElement('button');
+  injectBtn.textContent = 'Apply CSS to Page';
+  injectBtn.style.marginTop = '8px';
+  injectBtn.style.width = '100%';
+  injectBtn.style.padding = '10px 0';
+  injectBtn.style.background = 'var(--dark-accent)';
+  injectBtn.style.color = '#111';
+  injectBtn.style.border = 'none';
+  injectBtn.style.borderRadius = '8px';
+  injectBtn.style.fontWeight = '700';
+  injectBtn.style.cursor = 'pointer';
+  injectBtn.style.transition = 'all 0.3s ease';
+
+  injectBtn.addEventListener('mouseenter', () => {
+    injectBtn.style.background = '#7aa6e0';
+    injectBtn.style.boxShadow = '0 0 12px rgba(137, 180, 250, 0.5)';
+  });
+
+  injectBtn.addEventListener('mouseleave', () => {
+    injectBtn.style.background = 'var(--dark-accent)';
+    injectBtn.style.boxShadow = 'none';
+  });
+
+  injectBtn.addEventListener('click', applyCSSOutputToPage);
+
+  const panel = document.getElementById('element-styler-panel');
+  if (panel) {
+    panel.appendChild(injectBtn);
+  }
+  function addCloseButton() {
+  const panel = document.getElementById('element-styler-panel');
+  if (!panel) return;
+
+  // Create close button
+  const closeBtn = document.createElement('button');
+  closeBtn.innerHTML = '&times;';
+  closeBtn.style.position = 'absolute';
+  closeBtn.style.top = '10px';
+  closeBtn.style.left = '10px';
+  closeBtn.style.width = '30px';
+  closeBtn.style.height = '30px';
+  closeBtn.style.border = 'none';
+  closeBtn.style.borderRadius = '50%';
+  closeBtn.style.background = 'transparent';
+  closeBtn.style.color = 'var(--dark-text)';
+  closeBtn.style.fontSize = '20px';
+  closeBtn.style.cursor = 'pointer';
+  closeBtn.style.display = 'flex';
+  closeBtn.style.alignItems = 'center';
+  closeBtn.style.justifyContent = 'center';
+  closeBtn.style.transition = 'all 0.2s ease';
+
+  // Hover effects
+  closeBtn.addEventListener('mouseenter', () => {
+    closeBtn.style.background = 'var(--dark-hover)';
+    closeBtn.style.color = 'var(--dark-accent)';
+    closeBtn.style.transform = 'scale(1.1)';
+  });
+
+  closeBtn.addEventListener('mouseleave', () => {
+    closeBtn.style.background = 'transparent';
+    closeBtn.style.color = 'var(--dark-text)';
+    closeBtn.style.transform = 'scale(1)';
+  });
+
+  // Close functionality
+  closeBtn.addEventListener('click', () => {
+    panel.classList.remove('panel-open');
+  });
+
+  // Add close button to panel (first element so it's on top)
+  panel.insertBefore(closeBtn, panel.firstChild);
+}
+
+// Add the close button after a short delay to ensure panel exists
+setTimeout(addCloseButton, 500);
 })();
