@@ -521,66 +521,119 @@
     };
   }
 
-  function createPropertyRow(propName, tabName) {
-    const desc = styleOptions[tabName]?.[propName] || '';
-    const wrapper = document.createElement('div');
-    wrapper.className = 'property-row';
+function createPropertyRow(propName, tabName) {
+  const desc = styleOptions[tabName]?.[propName] || '';
+  const wrapper = document.createElement('div');
+  wrapper.className = 'property-row';
 
-    const label = document.createElement('label');
-    label.textContent = propName;
-    label.title = desc;
-    label.className = 'property-label';
-    label.addEventListener('mouseenter', () => {
-      const hintBox = document.getElementById('element-styler-hint-box');
-      hintBox.style.display = 'block';
-      hintBox.textContent = desc;
-    });
-    label.addEventListener('mouseleave', () => {
-      const hintBox = document.getElementById('element-styler-hint-box');
-      hintBox.style.display = 'none';
-      hintBox.textContent = '';
-    });
+  const label = document.createElement('label');
+  label.textContent = propName;
+  label.title = desc;
+  label.className = 'property-label';
 
-    const inputContainer = document.createElement('div');
-    inputContainer.className = 'input-with-picker';
+  label.addEventListener('mouseenter', () => {
+    const hintBox = document.getElementById('element-styler-hint-box');
+    hintBox.style.display = 'block';
+    hintBox.textContent = desc;
+  });
 
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.dataset.style = propName;
-    input.className = 'style-input';
-    inputContainer.appendChild(input);
+  label.addEventListener('mouseleave', () => {
+    const hintBox = document.getElementById('element-styler-hint-box');
+    hintBox.style.display = 'none';
+    hintBox.textContent = '';
+  });
 
-    const colorProps = ['color', 'backgroundColor', 'border', 'boxShadow', 'hoverColor', 'textDecoration'];
-    if (colorProps.some(k => k.toLowerCase() === propName.toLowerCase()) || desc.toLowerCase().includes('color')) {
-      const colorBtn = document.createElement('button');
-      colorBtn.className = 'color-picker-btn';
-      colorBtn.textContent = 'Color Picker';
-      colorBtn.title = 'Open color picker';
+  const inputContainer = document.createElement('div');
+  inputContainer.className = 'input-with-picker';
 
-      colorBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        const colorPicker = document.createElement('input');
-        colorPicker.type = 'color';
-        colorPicker.value = input.value.startsWith('#') ? input.value : '#000000';
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.dataset.style = propName;
+  input.className = 'style-input';
+  inputContainer.appendChild(input);
 
-        colorPicker.addEventListener('input', () => {
-          input.value = colorPicker.value;
-        });
+  const colorProps = ['color', 'backgroundColor', 'border', 'boxShadow', 'hoverColor', 'textDecoration'];
+  if (colorProps.some(k => k.toLowerCase() === propName.toLowerCase()) || desc.toLowerCase().includes('color')) {
+    const colorBtn = document.createElement('button');
+    colorBtn.className = 'color-picker-btn';
+    colorBtn.textContent = '🎨';
+    colorBtn.title = 'Open color picker';
+    inputContainer.appendChild(colorBtn);
 
-        colorPicker.addEventListener('change', () => {
-          input.value = colorPicker.value;
-        });
-
-        colorPicker.click();
+    // Reuse shared popup
+    let pickerPopup = document.getElementById('floating-color-popup');
+    if (!pickerPopup) {
+      pickerPopup = document.createElement('div');
+      pickerPopup.id = 'floating-color-popup';
+      Object.assign(pickerPopup.style, {
+        position: 'absolute',
+        display: 'none',
+        background: '#222',
+        padding: '6px',
+        borderRadius: '6px',
+        boxShadow: '0 0 8px rgba(0,0,0,0.8)',
+        zIndex: 2147483647,
+        cursor: 'move',
+        userSelect: 'none',
       });
 
-      inputContainer.appendChild(colorBtn);
+      const colorInput = document.createElement('input');
+      colorInput.type = 'color';
+      colorInput.style.width = '40px';
+      colorInput.style.height = '40px';
+      colorInput.style.border = 'none';
+      colorInput.style.cursor = 'pointer';
+
+      pickerPopup.appendChild(colorInput);
+      document.body.appendChild(pickerPopup);
+
+      // Drag logic
+      let isDragging = false, offsetX = 0, offsetY = 0;
+      pickerPopup.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        offsetX = e.offsetX;
+        offsetY = e.offsetY;
+      });
+      document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+          pickerPopup.style.left = (e.pageX - offsetX) + 'px';
+          pickerPopup.style.top = (e.pageY - offsetY) + 'px';
+        }
+      });
+      document.addEventListener('mouseup', () => {
+        isDragging = false;
+      });
+
+      // Close on outside click
+      document.addEventListener('mousedown', (e) => {
+        if (!pickerPopup.contains(e.target) && e.target.className !== 'color-picker-btn') {
+          pickerPopup.style.display = 'none';
+        }
+      });
     }
 
-    wrapper.appendChild(label);
-    wrapper.appendChild(inputContainer);
-    return wrapper;
+    colorBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const rect = colorBtn.getBoundingClientRect();
+      pickerPopup.style.left = `${rect.left + window.scrollX}px`;
+      pickerPopup.style.top = `${rect.bottom + window.scrollY + 5}px`;
+      pickerPopup.style.display = 'block';
+
+      const colorInput = pickerPopup.querySelector('input[type="color"]');
+      colorInput.value = /^#[0-9a-f]{6}$/i.test(input.value) ? input.value : '#000000';
+
+      colorInput.oninput = () => {
+        input.value = colorInput.value;
+        input.dispatchEvent(new Event('input')); // Ensure your logic sees it
+      };
+    });
   }
+
+  wrapper.appendChild(label);
+  wrapper.appendChild(inputContainer);
+  return wrapper;
+}
+
 
   function renderTab(panel) {
     const tabContent = panel.querySelector('#tabContent');
@@ -1011,7 +1064,6 @@
       URL.revokeObjectURL(url);
     });
 
-    // Add toggles for drag and scale
     const dragToggle = document.createElement('label');
     dragToggle.style.display = 'block';
     dragToggle.style.marginTop = '8px';
@@ -1151,91 +1203,122 @@
     panel.insertBefore(closeBtn, panel.firstChild);
   }
   setTimeout(addCloseButton, 500);
-   const toggleBtn = document.createElement('button');
-  Object.assign(toggleBtn.style, {
-    position: 'fixed',
-    top: '10px',
-    left: '10px',
-    zIndex: 99999,
-    padding: '6px 12px',
-    fontSize: '13px',
-    fontWeight: 'bold',
-    background: '#1e1e1e',
-    color: '#fff',
-    border: '1px solid #555',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.5)'
-  });
-  toggleBtn.textContent = 'CSS Panel';
-  document.body.appendChild(toggleBtn);
+const toggleBtn = document.createElement('button');
+Object.assign(toggleBtn.style, {
+  position: 'fixed',
+  top: '10px',
+  left: '10px',
+  zIndex: 9999999,
+  padding: '6px 12px',
+  fontSize: '13px',
+  fontWeight: 'bold',
+  background: '#1e1e1e',
+  color: '#96ffffff',
+  border: '1px solid #555',
+  borderRadius: '6px',
+  cursor: 'pointer',
+  boxShadow: '0 2px 4px rgba(0,0,0,0.5)'
+});
+toggleBtn.textContent = 'CSS Panel';
+document.body.appendChild(toggleBtn);
 
-  // Create CSS input panel
-  const cssInjectorPanel = document.createElement('div');
-  Object.assign(cssInjectorPanel.style, {
-    position: 'fixed',
-    top: '50px',
-    left: '10px',
-    width: '420px',
-    height: '320px',
-    background: '#121212',
-    color: '#eee',
-    border: '1px solid #333',
-    borderRadius: '8px',
-    padding: '12px',
-    fontFamily: 'monospace',
-    fontSize: '12px',
-    zIndex: 99999,
-    display: 'none',
-    flexDirection: 'column',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.6)'
-  });
+const cssInjectorPanel = document.createElement('div');
+Object.assign(cssInjectorPanel.style, {
+  position: 'fixed',
+  top: '50px',
+  left: '10px',
+  width: '420px',
+  height: '320px',
+  background: '#121212',
+  color: '#96ffffff',
+  border: '1px solid #333',
+  borderRadius: '8px',
+  padding: '12px',
+  fontFamily: 'monospace',
+  fontSize: '12px',
+  zIndex: 9999999,
+  display: 'none',
+  flexDirection: 'column',
+  boxShadow: '0 4px 12px rgba(0,0,0,0.6)'
+});
 
-  cssInjectorPanel.innerHTML = `
-    <textarea id="css-input" placeholder="Enter raw CSS..." style="flex: 1; width: 100%; height: 140px; background: #1e1e1e; color: #fff; border: 1px solid #444; border-radius: 4px; resize: none; margin-bottom: 10px; padding: 8px;"></textarea>
-    <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-      <button id="generate-js" style="flex: 1; padding: 6px; background: #2a2a2a; color: #fff; border: 1px solid #555; border-radius: 4px;">Generate JS</button>
-      <button id="copy-js" style="flex: 1; padding: 6px; background: #2a2a2a; color: #fff; border: 1px solid #555; border-radius: 4px;">Copy</button>
-    </div>
-    <pre id="js-output" style="flex: 1; background: #000; color: #0f0; padding: 8px; border-radius: 4px; overflow-y: auto; white-space: pre-wrap; border: 1px solid #222;"></pre>
-  `;
+cssInjectorPanel.innerHTML = `
+  <textarea id="css-input" placeholder="Enter raw CSS..." style="flex: 1; width: 100%; height: 140px; background: #1e1e1e; color: #fff; border: 1px solid #444; border-radius: 4px; resize: none; margin-bottom: 10px; padding: 8px;"></textarea>
+  <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+    <button id="generate-js" style="flex: 1; padding: 6px; background: #2a2a2a; color: #fff; border: 1px solid #555; border-radius: 4px;">Generate JS</button>
+    <button id="copy-js" style="flex: 1; padding: 6px; background: #2a2a2a; color: #fff; border: 1px solid #555; border-radius: 4px;">Copy</button>
+  </div>
+  <pre id="js-output" style="
+    flex: 1; 
+    background: #000; 
+    color: #ffffff; 
+    padding: 8px; 
+    border-radius: 4px; 
+    overflow-y: auto; 
+    white-space: 
+    pre-wrap; 
+    border: 1px 
+    solid #222;
+    
+  "></pre>
+`;
 
-  document.body.appendChild(cssInjectorPanel);
+document.body.appendChild(cssInjectorPanel);
 
-  // Toggle panel
-  toggleBtn.onclick = () => {
-    cssInjectorPanel.style.display = cssInjectorPanel.style.display === 'none' ? 'flex' : 'none';
-  };
+toggleBtn.onclick = () => {
+  const isHidden = cssInjectorPanel.style.display === 'none';
+  cssInjectorPanel.style.display = isHidden ? 'flex' : 'none';
+  if (isHidden) syncCssOutputToInput();
+};
 
-  const generateBtn = cssInjectorPanel.querySelector('#generate-js');
-  const copyBtn = cssInjectorPanel.querySelector('#copy-js');
-  const input = cssInjectorPanel.querySelector('#css-input');
-  const output = cssInjectorPanel.querySelector('#js-output');
+const generateBtn = cssInjectorPanel.querySelector('#generate-js');
+const copyBtn = cssInjectorPanel.querySelector('#copy-js');
+const input = cssInjectorPanel.querySelector('#css-input');
+const output = cssInjectorPanel.querySelector('#js-output');
 
-  generateBtn.onclick = () => {
-    const rawCSS = input.value;
-    const escaped = rawCSS
-      .replace(/\\/g, '\\\\')
-      .replace(/`/g, '\\`')
-      .replace(/\$/g, '\\$');
+generateBtn.onclick = () => {
+  const rawCSS = input.value;
+  const escaped = rawCSS
+    .replace(/\\/g, '\\\\')
+    .replace(/`/g, '\\`')
+    .replace(/\$/g, '\\$');
 
-    const jsCode = `(() => {
-  const style = document.createElement('style');
-  style.textContent = \`\n${escaped}\n\`;
-  document.head.appendChild(style);
+  const jsCode = `(() => {
+const style = document.createElement('style');
+style.textContent = \`\n${escaped}\n\`;
+document.head.appendChild(style);
 })();`;
 
-    output.textContent = jsCode;
-  };
+  output.textContent = jsCode;
+};
 
-  copyBtn.onclick = async () => {
-    const text = output.textContent;
-    try {
-      await navigator.clipboard.writeText(text);
-      copyBtn.textContent = 'Copied!';
-      setTimeout(() => (copyBtn.textContent = 'Copy'), 1000);
-    } catch (e) {
-      alert('Failed to copy to clipboard.');
-    }
-  };
+copyBtn.onclick = async () => {
+  const text = output.textContent;
+  try {
+    await navigator.clipboard.writeText(text);
+    copyBtn.textContent = 'Copied!';
+    setTimeout(() => (copyBtn.textContent = 'Copy'), 1000);
+  } catch {
+    alert('Failed to copy to clipboard.');
+  }
+};
+
+function syncCssOutputToInput() {
+  const cssOutput = document.getElementById('cssOutput');
+  const cssInput = document.getElementById('css-input');
+  if (cssOutput && cssInput) {
+    cssInput.value = cssOutput.value || '';
+  }
+}
+
+let lastCssOutputValue = '';
+setInterval(() => {
+  const cssOutput = document.getElementById('cssOutput');
+  const cssInput = document.getElementById('css-input');
+  if (cssOutput && cssInput && cssOutput.value !== lastCssOutputValue) {
+    cssInput.value = cssOutput.value;
+    lastCssOutputValue = cssOutput.value;
+  }
+}, 300);
+
 })();
