@@ -392,7 +392,7 @@
     }
   }
   `;
-  
+
   const HOVER_HINTS_URL = `
     {
   "Panels": {
@@ -427,7 +427,7 @@
   }
 }
   `;
-  
+
   window.HOVER_HINTS_URL = HOVER_HINTS_URL;
   let styleOptions = {},
     selected = null,
@@ -437,7 +437,7 @@
     allowTransparentStyling = false,
     recolorAllText = false;
   const tabs = ['Panels', 'Text', 'Links', 'Images'];
-  
+
   const isInsideLink = el => {
     while (el) {
       if (el.tagName?.toLowerCase() === 'a') return true;
@@ -473,12 +473,12 @@
     const infoTooltip = Object.assign(document.createElement('div'), {
       id: 'element-styler-info-tooltip'
     });
-    
+
     // Create toggle button
     const toggleBtn = Object.assign(document.createElement('div'), {
       id: 'element-styler-toggle'
     });
-    
+
     const panel = document.createElement('div');
     panel.id = 'element-styler-panel';
     panel.innerHTML = `
@@ -506,12 +506,12 @@
     });
 
     [overlay, infoTooltip, toggleBtn, panel, hintBox].forEach(el => document.body.appendChild(el));
-    
+
     // Toggle panel visibility
     toggleBtn.addEventListener('click', () => {
       panel.classList.toggle('panel-open');
     });
-    
+
     return {
       overlay,
       infoTooltip,
@@ -556,24 +556,24 @@
       colorBtn.className = 'color-picker-btn';
       colorBtn.textContent = 'Color Picker';
       colorBtn.title = 'Open color picker';
-      
+
       colorBtn.addEventListener('click', (e) => {
         e.preventDefault();
         const colorPicker = document.createElement('input');
         colorPicker.type = 'color';
         colorPicker.value = input.value.startsWith('#') ? input.value : '#000000';
-        
+
         colorPicker.addEventListener('input', () => {
           input.value = colorPicker.value;
         });
-        
+
         colorPicker.addEventListener('change', () => {
           input.value = colorPicker.value;
         });
-        
+
         colorPicker.click();
       });
-      
+
       inputContainer.appendChild(colorBtn);
     }
 
@@ -682,7 +682,8 @@
   }
 
   function clearRemoveRules(outputEl) {
-    const filtered = outputEl.value.split('\n').filter(line => !line.includes('/* element-remove') && !line.includes('/* element-remove-children'));
+    const filtered = outputEl.value.split('\n').filter(line => !line.includes('/* element-remove') && !line.includes(
+      '/* element-remove-children'));
     outputEl.value = filtered.join('\n').trim() + (filtered.length ? '\n\n' : '');
   }
 
@@ -693,7 +694,7 @@
 
   function throttle(fn, limit) {
     let lastCall = 0;
-    return function(...args) {
+    return function (...args) {
       const now = Date.now();
       if (now - lastCall >= limit) {
         lastCall = now;
@@ -735,7 +736,8 @@
         const selector = getSelector(selected);
         const cssText = output.value;
         toggleElementRemove.checked = cssText.includes(`${selector} { display: none; /* element-remove */`);
-        toggleRemoveChildren.checked = cssText.includes(`${selector} > * { display: none; /* element-remove-children */`);
+        toggleRemoveChildren.checked = cssText.includes(
+          `${selector} > * { display: none; /* element-remove-children */`);
       } else {
         selected = null;
         overlay.style.display = 'none';
@@ -764,7 +766,8 @@
       const selector = getSelector(selected);
       const cssText = output.value;
       toggleElementRemove.checked = cssText.includes(`${selector} { display: none; /* element-remove */`);
-      toggleRemoveChildren.checked = cssText.includes(`${selector} > * { display: none; /* element-remove-children */`);
+      toggleRemoveChildren.checked = cssText.includes(
+        `${selector} > * { display: none; /* element-remove-children */`);
     }, {
       passive: false
     });
@@ -807,8 +810,10 @@
         clearRemoveToggles(panel);
         return;
       }
-      if (!allowTransparentStyling && selected && !isVisible(selected) && selected.tagName.toLowerCase() !== 'img') {
-        alert('Selected element is invisible or transparent — styles will not be applied unless toggle is enabled.');
+      if (!allowTransparentStyling && selected && !isVisible(selected) && selected.tagName.toLowerCase() !==
+        'img') {
+        alert(
+        'Selected element is invisible or transparent — styles will not be applied unless toggle is enabled.');
         return;
       }
       const inputs = panel.querySelectorAll('input[data-style]');
@@ -857,7 +862,8 @@
             let val = input.value.trim();
             if (!val) return;
             if (/^\d+(\.\d+)?$/.test(val) && key !== 'color') val += 'px';
-            output.value += `${getSelector(selected)} {\n  ${key.replace(/[A-Z]/g, m => '-' + m.toLowerCase())}: ${val};\n}\n\n`;
+            output.value +=
+              `${getSelector(selected)} {\n  ${key.replace(/[A-Z]/g, m => '-' + m.toLowerCase())}: ${val};\n}\n\n`;
           });
         }
       } else if (currentTab === 2) {
@@ -877,7 +883,8 @@
           let val = input.value.trim();
           if (!val) return;
           if (/^\d+(\.\d+)?$/.test(val) && key !== 'color') val += 'px';
-          output.value += `${getSelector(selected)} {\n  ${key.replace(/[A-Z]/g, m => '-' + m.toLowerCase())}: ${val};\n}\n\n`;
+          output.value +=
+            `${getSelector(selected)} {\n  ${key.replace(/[A-Z]/g, m => '-' + m.toLowerCase())}: ${val};\n}\n\n`;
         });
       } else if (currentTab === 3) {
         if (!selected || selected.tagName.toLowerCase() !== 'img') {
@@ -896,7 +903,8 @@
           let val = input.value.trim();
           if (!val) return;
           if (/^\d+(\.\d+)?$/.test(val) && key !== 'color') val += 'px';
-          output.value += `${getSelector(selected)} {\n  ${key.replace(/[A-Z]/g, m => '-' + m.toLowerCase())}: ${val};\n}\n\n`;
+          output.value +=
+            `${getSelector(selected)} {\n  ${key.replace(/[A-Z]/g, m => '-' + m.toLowerCase())}: ${val};\n}\n\n`;
         });
       } else {
         if (!selected) return;
@@ -912,7 +920,8 @@
           let val = input.value.trim();
           if (!val) return;
           if (/^\d+(\.\d+)?$/.test(val) && key !== 'color') val += 'px';
-          output.value += `${getSelector(selected)} {\n  ${key.replace(/[A-Z]/g, m => '-' + m.toLowerCase())}: ${val};\n}\n\n`;
+          output.value +=
+            `${getSelector(selected)} {\n  ${key.replace(/[A-Z]/g, m => '-' + m.toLowerCase())}: ${val};\n}\n\n`;
         });
       }
     };
@@ -939,155 +948,147 @@
     renderTab(panel);
     setupEventListeners(overlay, infoTooltip, panel, hintBox);
   })();
-  
-function applyTransformScale(el, scale) {
-  if (!el) return;
 
-  const style = getComputedStyle(el);
-  if (style.display === 'inline') el.style.display = 'inline-block';
-  if (style.position === 'static') el.style.position = 'relative';
+  function applyTransformScale(el, scale) {
+    if (!el) return;
 
-  let base = el.style.transform || getComputedStyle(el).transform || '';
-  base = base === 'none' ? '' : base;
+    const style = getComputedStyle(el);
+    if (style.display === 'inline') el.style.display = 'inline-block';
+    if (style.position === 'static') el.style.position = 'relative';
 
-  base = base.replace(/scale\([^)]+\)/g, '').trim();
-  if (base && !base.endsWith(')')) base += ' ';
-  el.style.transform = `${base}scale(${scale})`.trim();
-}
+    let base = el.style.transform || getComputedStyle(el).transform || '';
+    base = base === 'none' ? '' : base;
 
-function addExportButton() {
-  const panel = document.getElementById('element-styler-panel');
+    base = base.replace(/scale\([^)]+\)/g, '').trim();
+    if (base && !base.endsWith(')')) base += ' ';
+    el.style.transform = `${base}scale(${scale})`.trim();
+  }
 
-  const exportBtn = document.createElement('button');
-  exportBtn.id = 'exportCss';
-  exportBtn.textContent = 'Export CSS';
-  exportBtn.style.marginTop = '8px';
-  exportBtn.style.width = '100%';
-  exportBtn.style.padding = '10px 0';
-  exportBtn.style.background = 'var(--dark-accent)';
-  exportBtn.style.color = '#111';
-  exportBtn.style.border = 'none';
-  exportBtn.style.borderRadius = '8px';
-  exportBtn.style.fontWeight = '700';
-  exportBtn.style.cursor = 'pointer';
-  exportBtn.style.transition = 'all 0.3s ease';
+  function addExportButton() {
+    const panel = document.getElementById('element-styler-panel');
 
-  exportBtn.addEventListener('mouseenter', () => {
-    exportBtn.style.background = '#7aa6e0';
-    exportBtn.style.boxShadow = '0 0 12px rgba(137, 180, 250, 0.5)';
-  });
-
-  exportBtn.addEventListener('mouseleave', () => {
+    const exportBtn = document.createElement('button');
+    exportBtn.id = 'exportCss';
+    exportBtn.textContent = 'Export CSS';
+    exportBtn.style.marginTop = '8px';
+    exportBtn.style.width = '100%';
+    exportBtn.style.padding = '10px 0';
     exportBtn.style.background = 'var(--dark-accent)';
-    exportBtn.style.boxShadow = 'none';
-  });
+    exportBtn.style.color = '#111';
+    exportBtn.style.border = 'none';
+    exportBtn.style.borderRadius = '8px';
+    exportBtn.style.fontWeight = '700';
+    exportBtn.style.cursor = 'pointer';
+    exportBtn.style.transition = 'all 0.3s ease';
 
-  exportBtn.addEventListener('click', () => {
-    const cssOutput = document.getElementById('cssOutput');
-    if (!cssOutput.value.trim()) {
-      alert('No CSS to export!');
-      return;
-    }
+    exportBtn.addEventListener('mouseenter', () => {
+      exportBtn.style.background = '#7aa6e0';
+      exportBtn.style.boxShadow = '0 0 12px rgba(137, 180, 250, 0.5)';
+    });
 
-    const blob = new Blob([cssOutput.value], { type: 'text/css' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'element-styles.css';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  });
+    exportBtn.addEventListener('mouseleave', () => {
+      exportBtn.style.background = 'var(--dark-accent)';
+      exportBtn.style.boxShadow = 'none';
+    });
 
-  // Add toggles for drag and scale
-  const dragToggle = document.createElement('label');
-  dragToggle.style.display = 'block';
-  dragToggle.style.marginTop = '8px';
-  dragToggle.innerHTML = `<input type="checkbox" id="toggleDragElement" /> Enable Drag`;
+    exportBtn.addEventListener('click', () => {
+      const cssOutput = document.getElementById('cssOutput');
+      if (!cssOutput.value.trim()) {
+        alert('No CSS to export!');
+        return;
+      }
 
-  const scaleToggle = document.createElement('label');
-  scaleToggle.style.display = 'block';
-  scaleToggle.style.marginTop = '8px';
-  scaleToggle.innerHTML = `<input type="checkbox" id="toggleScaleElement" /> Enable Scale (wheel)`;
+      const blob = new Blob([cssOutput.value], {
+        type: 'text/css'
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'element-styles.css';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
 
-  panel.appendChild(dragToggle);
-  panel.appendChild(scaleToggle);
-  panel.appendChild(exportBtn);
+    // Add toggles for drag and scale
+    const dragToggle = document.createElement('label');
+    dragToggle.style.display = 'block';
+    dragToggle.style.marginTop = '8px';
+    dragToggle.innerHTML = `<input type="checkbox" id="toggleDragElement" /> Enable Drag`;
 
-  // Drag + Scale logic
-  let isDragging = false;
-  let offsetX = 0;
-  let offsetY = 0;
-  let currentScale = 1;
+    const scaleToggle = document.createElement('label');
+    scaleToggle.style.display = 'block';
+    scaleToggle.style.marginTop = '8px';
+    scaleToggle.innerHTML = `<input type="checkbox" id="toggleScaleElement" /> Enable Scale (wheel)`;
 
-  document.addEventListener('mousedown', e => {
-    if (!selected || !document.getElementById('toggleDragElement').checked) return;
-    if (!e.altKey) return;
+    panel.appendChild(dragToggle);
+    panel.appendChild(scaleToggle);
+    panel.appendChild(exportBtn);
 
-    e.preventDefault();
-    const rect = selected.getBoundingClientRect();
-    offsetX = e.clientX - rect.left;
-    offsetY = e.clientY - rect.top;
-    isDragging = true;
+    // Drag + Scale logic
+    let isDragging = false;
+    let offsetX = 0;
+    let offsetY = 0;
+    let currentScale = 1;
 
-    const style = getComputedStyle(selected);
-    if (style.position === 'static') selected.style.position = 'relative';
-    if (style.display === 'inline') selected.style.display = 'inline-block';
-  });
+    document.addEventListener('mousedown', e => {
+      if (!selected || !document.getElementById('toggleDragElement').checked) return;
+      if (!e.altKey) return;
 
-  document.addEventListener('mouseup', e => {
-    if (isDragging) {
-      isDragging = false;
+      e.preventDefault();
+      const rect = selected.getBoundingClientRect();
+      offsetX = e.clientX - rect.left;
+      offsetY = e.clientY - rect.top;
+      isDragging = true;
+
+      const style = getComputedStyle(selected);
+      if (style.position === 'static') selected.style.position = 'relative';
+      if (style.display === 'inline') selected.style.display = 'inline-block';
+    });
+    document.addEventListener('mouseup', e => {
+      if (isDragging) {
+        isDragging = false;
+        const output = document.getElementById('cssOutput');
+        const transform = selected.style.transform || '';
+        output.value += `${getSelector(selected)} {\n  transform: ${transform};\n}\n\n`;
+      }
+    });
+    document.addEventListener('mousemove', e => {
+      if (!isDragging || !selected) return;
+      e.preventDefault();
+      const x = e.clientX - offsetX;
+      const y = e.clientY - offsetY;
+      selected.style.left = `${x}px`;
+      selected.style.top = `${y}px`;
+      applyTransformScale(selected, currentScale);
+    });
+    document.addEventListener('wheel', e => {
+      if (!selected || !document.getElementById('toggleScaleElement').checked) return;
+      if (!e.altKey) return;
+      e.preventDefault();
+      const delta = -Math.sign(e.deltaY) * 0.1;
+      currentScale = Math.max(0.2, Math.min(currentScale + delta, 4));
+      applyTransformScale(selected, currentScale);
       const output = document.getElementById('cssOutput');
       const transform = selected.style.transform || '';
       output.value += `${getSelector(selected)} {\n  transform: ${transform};\n}\n\n`;
-    }
-  });
-
-  document.addEventListener('mousemove', e => {
-    if (!isDragging || !selected) return;
-    e.preventDefault();
-    const x = e.clientX - offsetX;
-    const y = e.clientY - offsetY;
-    selected.style.left = `${x}px`;
-    selected.style.top = `${y}px`;
-
-    applyTransformScale(selected, currentScale);
-  });
-
-  document.addEventListener('wheel', e => {
-    if (!selected || !document.getElementById('toggleScaleElement').checked) return;
-    if (!e.altKey) return;
-
-    e.preventDefault();
-    const delta = -Math.sign(e.deltaY) * 0.1;
-    currentScale = Math.max(0.2, Math.min(currentScale + delta, 4));
-
-    applyTransformScale(selected, currentScale);
-
-    const output = document.getElementById('cssOutput');
-    const transform = selected.style.transform || '';
-    output.value += `${getSelector(selected)} {\n  transform: ${transform};\n}\n\n`;
-  }, { passive: false });
-}
-
-setTimeout(addExportButton, 500);
-
+    }, {
+      passive: false
+    });
+  }
+  setTimeout(addExportButton, 500);
   const applyCSSOutputToPage = () => {
     const css = document.getElementById('cssOutput')?.value;
     if (!css) return;
-
     let styleTag = document.getElementById('element-styler-output-style');
     if (!styleTag) {
       styleTag = document.createElement('style');
       styleTag.id = 'element-styler-output-style';
       document.head.appendChild(styleTag);
     }
-
     styleTag.textContent = css;
   };
-
   const injectBtn = document.createElement('button');
   injectBtn.textContent = 'Apply CSS to Page';
   injectBtn.style.marginTop = '8px';
@@ -1100,68 +1101,54 @@ setTimeout(addExportButton, 500);
   injectBtn.style.fontWeight = '700';
   injectBtn.style.cursor = 'pointer';
   injectBtn.style.transition = 'all 0.3s ease';
-
   injectBtn.addEventListener('mouseenter', () => {
     injectBtn.style.background = '#7aa6e0';
     injectBtn.style.boxShadow = '0 0 12px rgba(137, 180, 250, 0.5)';
   });
-
   injectBtn.addEventListener('mouseleave', () => {
     injectBtn.style.background = 'var(--dark-accent)';
     injectBtn.style.boxShadow = 'none';
   });
-
   injectBtn.addEventListener('click', applyCSSOutputToPage);
-
   const panel = document.getElementById('element-styler-panel');
   if (panel) {
     panel.appendChild(injectBtn);
   }
+
   function addCloseButton() {
-  const panel = document.getElementById('element-styler-panel');
-  if (!panel) return;
-
-  // Create close button
-  const closeBtn = document.createElement('button');
-  closeBtn.innerHTML = '&times;';
-  closeBtn.style.position = 'absolute';
-  closeBtn.style.top = '10px';
-  closeBtn.style.left = '10px';
-  closeBtn.style.width = '30px';
-  closeBtn.style.height = '30px';
-  closeBtn.style.border = 'none';
-  closeBtn.style.borderRadius = '50%';
-  closeBtn.style.background = 'transparent';
-  closeBtn.style.color = 'var(--dark-text)';
-  closeBtn.style.fontSize = '20px';
-  closeBtn.style.cursor = 'pointer';
-  closeBtn.style.display = 'flex';
-  closeBtn.style.alignItems = 'center';
-  closeBtn.style.justifyContent = 'center';
-  closeBtn.style.transition = 'all 0.2s ease';
-
-  // Hover effects
-  closeBtn.addEventListener('mouseenter', () => {
-    closeBtn.style.background = 'var(--dark-hover)';
-    closeBtn.style.color = 'var(--dark-accent)';
-    closeBtn.style.transform = 'scale(1.1)';
-  });
-
-  closeBtn.addEventListener('mouseleave', () => {
+    const panel = document.getElementById('element-styler-panel');
+    if (!panel) return;
+    const closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '&times;';
+    closeBtn.style.position = 'absolute';
+    closeBtn.style.top = '10px';
+    closeBtn.style.left = '10px';
+    closeBtn.style.width = '30px';
+    closeBtn.style.height = '30px';
+    closeBtn.style.border = 'none';
+    closeBtn.style.borderRadius = '50%';
     closeBtn.style.background = 'transparent';
     closeBtn.style.color = 'var(--dark-text)';
-    closeBtn.style.transform = 'scale(1)';
-  });
-
-  // Close functionality
-  closeBtn.addEventListener('click', () => {
-    panel.classList.remove('panel-open');
-  });
-
-  // Add close button to panel (first element so it's on top)
-  panel.insertBefore(closeBtn, panel.firstChild);
-}
-
-// Add the close button after a short delay to ensure panel exists
-setTimeout(addCloseButton, 500);
+    closeBtn.style.fontSize = '20px';
+    closeBtn.style.cursor = 'pointer';
+    closeBtn.style.display = 'flex';
+    closeBtn.style.alignItems = 'center';
+    closeBtn.style.justifyContent = 'center';
+    closeBtn.style.transition = 'all 0.2s ease';
+    closeBtn.addEventListener('mouseenter', () => {
+      closeBtn.style.background = 'var(--dark-hover)';
+      closeBtn.style.color = 'var(--dark-accent)';
+      closeBtn.style.transform = 'scale(1.1)';
+    });
+    closeBtn.addEventListener('mouseleave', () => {
+      closeBtn.style.background = 'transparent';
+      closeBtn.style.color = 'var(--dark-text)';
+      closeBtn.style.transform = 'scale(1)';
+    });
+    closeBtn.addEventListener('click', () => {
+      panel.classList.remove('panel-open');
+    });
+    panel.insertBefore(closeBtn, panel.firstChild);
+  }
+  setTimeout(addCloseButton, 500);
 })();
