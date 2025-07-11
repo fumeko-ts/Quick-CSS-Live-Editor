@@ -19,5 +19,18 @@
     "letterSpacing": "normal, 2px, -1px",
     "wordSpacing": "normal, 5px"
   },
-  "...": {}
+  "Links": {
+    "color": "blue, #00f, rgba(0,0,255,0.8)",
+    "textDecoration": "none, underline, overline, line-through",
+    "hoverColor": "red, green, blue, #f00",
+    "fontWeight": "normal, bold",
+    "fontSize": "12, 14, 16"
+  },
+  "Images": {
+    "width": "100, 200, 50%",
+    "height": "100, 200, auto",
+    "borderRadius": "0, 10px, 50%",
+    "opacity": "0.5 to 1.0",
+    "boxShadow": "0 0 10px black"
+  }
 }
