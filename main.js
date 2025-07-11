@@ -1,6 +1,399 @@
 (() => {
-  const CSS_URL = 'https://raw.githubusercontent.com/fumeko-ts/Quick-CSS-Live-Editor/main/src/ui.css';
-  const HOVER_HINTS_URL = 'https://raw.githubusercontent.com/fumeko-ts/Quick-CSS-Live-Editor/main/src/hover-text.atemp';
+  const CSS_URL = `
+  #element-styler-overlay {
+    position: absolute;
+    border: 2px solid #4fc3f7;
+    border-radius: 4px;
+    pointer-events: none;
+    z-index: 2147483647;
+    display: none;
+    box-shadow: 0 0 6px 1px rgba(79, 195, 247, 0.75);
+    transition: box-shadow 0.15s ease;
+  }
+
+  :root {
+    --dark-bg: #1e1e2e;
+    --darker-bg: #181825;
+    --dark-text: #cdd6f4;
+    --dark-accent: #89b4fa;
+    --dark-hover: #313244;
+    --dark-active: #45475a;
+    --dark-border: #585b70;
+    --dark-glow: rgba(79, 195, 247, 0.2);
+  }
+
+  /* Main Panel Styling */
+  #element-styler-panel {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--darker-bg);
+    color: var(--dark-text);
+    padding: 16px 18px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px;
+    border-radius: 12px;
+    border: 1px solid var(--dark-border);
+    z-index: 2147483647;
+    width: min(380px, calc(100vw - 40px));
+    box-shadow: 
+      0 6px 18px rgba(0, 0, 0, 0.5),
+      inset 0 1px 1px rgba(255, 255, 255, 0.05);
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 40px);
+    box-sizing: border-box;
+  }
+
+  #element-styler-panel .panel-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  /* Tab System */
+  #element-styler-panel #tabButtons {
+    margin: 12px 0 16px;
+    display: flex;
+    gap: 2px;
+    padding: 4px;
+    background-color: var(--darker-bg);
+    border-radius: 10px;
+    border: 1px solid var(--dark-border);
+    box-shadow: 
+      0 2px 6px rgba(0, 0, 0, 0.3),
+      inset 0 1px 1px rgba(255, 255, 255, 0.05);
+    user-select: none;
+  }
+
+  #tabButtons button {
+    flex: 1;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    background-color: transparent;
+    color: var(--dark-text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    letter-spacing: 0.3px;
+  }
+
+  #tabButtons button:hover {
+    background-color: var(--dark-hover);
+    box-shadow: 0 0 8px var(--dark-glow);
+  }
+
+  #tabButtons button.active {
+    background-color: rgba(137, 180, 250, 0.15);
+    color: var(--dark-accent);
+    font-weight: 600;
+    box-shadow: 0 0 0 1px rgba(137, 180, 250, 0.3);
+  }
+
+  #tabButtons button.active::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50%;
+    height: 2px;
+    background-color: var(--dark-accent);
+    border-radius: 2px;
+    animation: tabUnderline 0.3s ease-out;
+  }
+
+  @keyframes tabUnderline {
+    from {
+      width: 0;
+      opacity: 0;
+    }
+    to {
+      width: 50%;
+      opacity: 1;
+    }
+  }
+
+  #element-styler-panel #tabContent {
+    margin-bottom: 16px;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+    scrollbar-width: thin;
+    scrollbar-color: var(--dark-accent) var(--darker-bg);
+  }
+
+  /* Form Elements */
+  #element-styler-panel input[data-style] {
+    width: 100%;
+    background: var(--dark-bg);
+    border: 1.5px solid var(--dark-border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    color: var(--dark-text);
+    font-family: 'Consolas', monospace;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: all 0.25s ease;
+  }
+
+  #element-styler-panel input[data-style]:focus {
+    outline: none;
+    background: var(--darker-bg);
+    border-color: var(--dark-accent);
+    box-shadow: 0 0 8px rgba(137, 180, 250, 0.5);
+    color: #aeefff;
+  }
+
+  #element-styler-panel label {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 6px;
+    cursor: default;
+    user-select: none;
+    color: #bbb;
+    font-weight: 500;
+  }
+
+  #element-styler-panel label[for="toggleTransparent"] {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--dark-accent);
+  }
+
+  /* Buttons */
+  #element-styler-panel #applyStyle,
+  #element-styler-panel #resetStyle {
+    margin-top: 8px;
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 0;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+  }
+
+  #element-styler-panel #applyStyle {
+    background: var(--dark-accent);
+    color: #111;
+  }
+
+  #element-styler-panel #applyStyle:hover {
+    background: #7aa6e0;
+    box-shadow: 0 0 12px rgba(137, 180, 250, 0.5);
+  }
+
+  #element-styler-panel #resetStyle {
+    background: #f15a5a;
+    color: white;
+    margin-top: 10px;
+  }
+
+  #element-styler-panel #resetStyle:hover {
+    background: #d04141;
+    box-shadow: 0 0 12px rgba(241, 90, 90, 0.4);
+  }
+
+  /* CSS Output */
+  #element-styler-panel #cssOutput {
+    width: 100%;
+    height: 140px;
+    background: var(--dark-bg);
+    color: var(--dark-text);
+    border: 1.5px solid var(--dark-border);
+    border-radius: 8px;
+    padding: 10px;
+    font-family: 'Consolas', monospace;
+    white-space: pre-wrap;
+    resize: vertical;
+    box-sizing: border-box;
+    margin-top: 12px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--dark-accent) var(--dark-bg);
+    max-height: 200px;
+  }
+
+  /* Tooltip & Info */
+  #element-styler-info-tooltip {
+    position: fixed;
+    top: 0;
+    left: 0;
+    max-width: min(280px, 90vw);
+    background-color: rgba(15, 15, 15, 0.9);
+    color: var(--dark-accent);
+    font-family: 'Minecraftia', monospace;
+    font-size: 12px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    pointer-events: none;
+    user-select: none;
+    white-space: pre-line;
+    z-index: 2147483647;
+    transform: translate(10px, 10px);
+    transition: opacity 0.15s ease;
+    opacity: 0;
+    box-shadow: 0 0 10px rgba(137, 180, 250, 0.5);
+    backdrop-filter: blur(2px);
+    border: 1px solid rgba(137, 180, 250, 0.3);
+  }
+
+  #element-styler-hint-box {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(24, 24, 24, 0.96);
+    color: var(--dark-accent);
+    font-family: 'Segoe UI', monospace;
+    font-size: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    max-height: 150px;
+    overflow-y: auto;
+    white-space: normal;
+    z-index: 2147483647;
+    display: none;
+    user-select: none;
+    cursor: default;
+    box-sizing: border-box;
+    box-shadow: 0 0 15px rgba(137, 180, 250, 0.5);
+    backdrop-filter: blur(2px);
+    border: 1px solid rgba(137, 180, 250, 0.3);
+  }
+
+  /* Property Rows */
+  .property-row {
+    margin-bottom: 14px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .property-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+  }
+
+  .color-picker-btn {
+    margin-top: 6px;
+    padding: 6px 10px;
+    background: var(--dark-bg);
+    color: var(--dark-text);
+    border: 1px solid var(--dark-border);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    width: 100%;
+    text-align: center;
+    transition: all 0.2s ease;
+  }
+
+  .color-picker-btn:hover {
+    background: var(--dark-hover);
+    border-color: var(--dark-accent);
+  }
+
+  .input-with-picker {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .input-with-picker input {
+    flex: 1;
+  }
+
+  /* Scrollbars */
+  #element-styler-panel #tabContent::-webkit-scrollbar,
+  #element-styler-panel #cssOutput::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  #element-styler-panel #tabContent::-webkit-scrollbar-track,
+  #element-styler-panel #cssOutput::-webkit-scrollbar-track {
+    background: var(--darker-bg);
+  }
+
+  #element-styler-panel #tabContent::-webkit-scrollbar-thumb,
+  #element-styler-panel #cssOutput::-webkit-scrollbar-thumb {
+    background-color: var(--dark-accent);
+    border-radius: 4px;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    #element-styler-panel {
+      right: 10px;
+      left: 10px;
+      width: calc(100vw - 20px);
+      top: 10px;
+      max-height: calc(100vh - 20px);
+      padding: 12px;
+    }
+
+    #tabButtons {
+      flex-wrap: wrap;
+    }
+    
+    #tabButtons button {
+      padding: 8px 12px;
+      font-size: 12px;
+      flex: 1 0 40%;
+    }
+  }
+  `;
+  
+  const HOVER_HINTS_URL = `
+    {
+  "Panels": {
+    "backgroundColor": "Background color (color value)",
+    "border": "Border style (e.g., '1px solid black')",
+    "padding": "Padding (e.g., '10px')",
+    "margin": "Margin (e.g., '10px')",
+    "boxShadow": "Box shadow (e.g., '0 0 5px black')",
+    "borderRadius": "Border radius (e.g., '5px')",
+    "opacity": "Opacity (0.0 to 1.0)"
+  },
+  "Text": {
+    "color": "Text color (color value)",
+    "fontSize": "Font size (e.g., '16px')",
+    "fontWeight": "Font weight (e.g., 'bold')",
+    "lineHeight": "Line height (e.g., '1.5')",
+    "textShadow": "Text shadow (e.g., '1px 1px 2px black')",
+    "textAlign": "Text alignment (e.g., 'center')",
+    "fontStyle": "Font style (e.g., 'italic')"
+  },
+  "Links": {
+    "color": "Link color (color value)",
+    "textDecoration": "Text decoration (e.g., 'none')",
+    "hoverColor": "Hover color (color value)",
+    "fontWeight": "Font weight (e.g., 'bold')"
+  },
+  "Images": {
+    "width": "Width (e.g., '100px')",
+    "height": "Height (e.g., 'auto')",
+    "borderRadius": "Border radius (e.g., '10px')",
+    "opacity": "Opacity (0.5 to 1.0)"
+  }
+}
+  `;
+  
   window.HOVER_HINTS_URL = HOVER_HINTS_URL;
   let styleOptions = {},
     selected = null,
@@ -10,14 +403,7 @@
     allowTransparentStyling = false,
     recolorAllText = false;
   const tabs = ['Panels', 'Text', 'Links', 'Images'];
-  const predefinedColors = [
-    "black", "white", "red", "green", "blue", "cyan", "magenta", "yellow", "gray",
-    "lime", "maroon", "navy", "olive", "orange", "purple", "silver", "teal",
-    "aqua", "fuchsia", "coral", "gold", "pink", "violet", "indigo", "beige",
-    "brown", "salmon", "tan", "turquoise", "plum", "khaki", "lavender",
-    "#4fc3f7", "#3f7fcf", "#222", "#1f1f1f", "rgba(79,195,247,0.75)", "transparent"
-  ];
-
+  
   const isInsideLink = el => {
     while (el) {
       if (el.tagName?.toLowerCase() === 'a') return true;
@@ -28,12 +414,9 @@
 
   async function loadCSS(url) {
     try {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('Failed to load CSS');
-      const cssText = await res.text();
       const styleTag = document.createElement('style');
       styleTag.id = 'element-styler-css';
-      styleTag.textContent = cssText;
+      styleTag.textContent = url;
       document.head.appendChild(styleTag);
     } catch (e) {
       console.error('Error loading CSS:', e);
@@ -42,9 +425,7 @@
 
   async function loadHoverHints() {
     try {
-      const res = await fetch(HOVER_HINTS_URL);
-      if (!res.ok) throw new Error('Failed to load hover hints');
-      styleOptions = await res.json();
+      styleOptions = JSON.parse(HOVER_HINTS_URL);
     } catch (e) {
       console.error('Error loading hover hints:', e);
       styleOptions = {};
@@ -114,22 +495,44 @@
       hintBox.textContent = '';
     });
 
+    const inputContainer = document.createElement('div');
+    inputContainer.className = 'input-with-picker';
+
     const input = document.createElement('input');
     input.type = 'text';
     input.dataset.style = propName;
     input.className = 'style-input';
+    inputContainer.appendChild(input);
 
     const colorProps = ['color', 'backgroundColor', 'border', 'boxShadow', 'hoverColor', 'textDecoration'];
-    let dropdown = null;
     if (colorProps.some(k => k.toLowerCase() === propName.toLowerCase()) || desc.toLowerCase().includes('color')) {
-      dropdown = document.createElement('select');
-      dropdown.className = 'color-dropdown';
-      dropdown.appendChild(new Option('-- select color --', ''));
-      for (const c of predefinedColors) dropdown.appendChild(new Option(c, c));
-      dropdown.onchange = () => (input.value = dropdown.value);
+      const colorBtn = document.createElement('button');
+      colorBtn.className = 'color-picker-btn';
+      colorBtn.textContent = 'Color Picker';
+      colorBtn.title = 'Open color picker';
+      
+      colorBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const colorPicker = document.createElement('input');
+        colorPicker.type = 'color';
+        colorPicker.value = input.value.startsWith('#') ? input.value : '#000000';
+        
+        colorPicker.addEventListener('input', () => {
+          input.value = colorPicker.value;
+        });
+        
+        colorPicker.addEventListener('change', () => {
+          input.value = colorPicker.value;
+        });
+        
+        colorPicker.click();
+      });
+      
+      inputContainer.appendChild(colorBtn);
     }
 
-    [label, input, dropdown].forEach(el => el && wrapper.appendChild(el));
+    wrapper.appendChild(label);
+    wrapper.appendChild(inputContainer);
     return wrapper;
   }
 
@@ -158,7 +561,6 @@
     });
   }
 
-  // Helper to position tooltip near cursor and keep inside viewport
   function positionTooltip(e, tooltip) {
     const pad = 12;
     const {
@@ -200,7 +602,6 @@
 
     tooltip.innerHTML = '';
 
-    // Only add simple text info
     const infoText = document.createElement('div');
     infoText.textContent = `${tag}${id}${classes}`;
     infoText.style.fontWeight = 'bold';
@@ -210,7 +611,6 @@
 
     if (e) positionTooltip(e, tooltip);
   }
-
 
   function isVisible(el) {
     const s = window.getComputedStyle(el);
@@ -245,7 +645,6 @@
     panel.querySelector('#toggleRemoveChildren').checked = false;
   }
 
-  // Throttle function to limit frequency of calls
   function throttle(fn, limit) {
     let lastCall = 0;
     return function(...args) {
@@ -297,7 +696,7 @@
         updateInfoTooltip(null);
         clearRemoveToggles(panel);
       }
-    }, 50)); // throttle to 20fps
+    }, 50));
 
     document.addEventListener('wheel', e => {
       if (!e.altKey || underCursorElements.length <= 1) return;
@@ -454,7 +853,6 @@
           output.value += `${getSelector(selected)} {\n  ${key.replace(/[A-Z]/g, m => '-' + m.toLowerCase())}: ${val};\n}\n\n`;
         });
       } else {
-        // Panels tab
         if (!selected) return;
         inputs.forEach(input => {
           const key = input.dataset.style;
@@ -495,5 +893,139 @@
     renderTab(panel);
     setupEventListeners(overlay, infoTooltip, panel, hintBox);
   })();
+function applyTransformScale(el, scale) {
+  if (!el) return;
+
+  const style = getComputedStyle(el);
+  if (style.display === 'inline') el.style.display = 'inline-block';
+  if (style.position === 'static') el.style.position = 'relative';
+
+  let base = el.style.transform || getComputedStyle(el).transform || '';
+  base = base === 'none' ? '' : base;
+
+  base = base.replace(/scale\([^)]+\)/g, '').trim();
+  if (base && !base.endsWith(')')) base += ' ';
+  el.style.transform = `${base}scale(${scale})`.trim();
+}
+
+function addExportButton() {
+  const panel = document.getElementById('element-styler-panel');
+
+  const exportBtn = document.createElement('button');
+  exportBtn.id = 'exportCss';
+  exportBtn.textContent = 'Export CSS';
+  exportBtn.style.marginTop = '8px';
+  exportBtn.style.width = '100%';
+  exportBtn.style.padding = '10px 0';
+  exportBtn.style.background = 'var(--dark-accent)';
+  exportBtn.style.color = '#111';
+  exportBtn.style.border = 'none';
+  exportBtn.style.borderRadius = '8px';
+  exportBtn.style.fontWeight = '700';
+  exportBtn.style.cursor = 'pointer';
+  exportBtn.style.transition = 'all 0.3s ease';
+
+  exportBtn.addEventListener('mouseenter', () => {
+    exportBtn.style.background = '#7aa6e0';
+    exportBtn.style.boxShadow = '0 0 12px rgba(137, 180, 250, 0.5)';
+  });
+
+  exportBtn.addEventListener('mouseleave', () => {
+    exportBtn.style.background = 'var(--dark-accent)';
+    exportBtn.style.boxShadow = 'none';
+  });
+
+  exportBtn.addEventListener('click', () => {
+    const cssOutput = document.getElementById('cssOutput');
+    if (!cssOutput.value.trim()) {
+      alert('No CSS to export!');
+      return;
+    }
+
+    const blob = new Blob([cssOutput.value], { type: 'text/css' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'element-styles.css';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  // Add toggles for drag and scale
+  const dragToggle = document.createElement('label');
+  dragToggle.style.display = 'block';
+  dragToggle.style.marginTop = '8px';
+  dragToggle.innerHTML = `<input type="checkbox" id="toggleDragElement" /> Enable Drag`;
+
+  const scaleToggle = document.createElement('label');
+  scaleToggle.style.display = 'block';
+  scaleToggle.style.marginTop = '8px';
+  scaleToggle.innerHTML = `<input type="checkbox" id="toggleScaleElement" /> Enable Scale (wheel)`;
+
+  panel.appendChild(dragToggle);
+  panel.appendChild(scaleToggle);
+  panel.appendChild(exportBtn);
+
+  // Drag + Scale logic
+  let isDragging = false;
+  let offsetX = 0;
+  let offsetY = 0;
+  let currentScale = 1;
+
+  document.addEventListener('mousedown', e => {
+    if (!selected || !document.getElementById('toggleDragElement').checked) return;
+    if (!e.altKey) return;
+
+    e.preventDefault();
+    const rect = selected.getBoundingClientRect();
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+    isDragging = true;
+
+    const style = getComputedStyle(selected);
+    if (style.position === 'static') selected.style.position = 'relative';
+    if (style.display === 'inline') selected.style.display = 'inline-block';
+  });
+
+  document.addEventListener('mouseup', e => {
+    if (isDragging) {
+      isDragging = false;
+      const output = document.getElementById('cssOutput');
+      const transform = selected.style.transform || '';
+      output.value += `${getSelector(selected)} {\n  transform: ${transform};\n}\n\n`;
+    }
+  });
+
+  document.addEventListener('mousemove', e => {
+    if (!isDragging || !selected) return;
+    e.preventDefault();
+    const x = e.clientX - offsetX;
+    const y = e.clientY - offsetY;
+    selected.style.left = `${x}px`;
+    selected.style.top = `${y}px`;
+
+    applyTransformScale(selected, currentScale);
+  });
+
+  document.addEventListener('wheel', e => {
+    if (!selected || !document.getElementById('toggleScaleElement').checked) return;
+    if (!e.altKey) return;
+
+    e.preventDefault();
+    const delta = -Math.sign(e.deltaY) * 0.1;
+    currentScale = Math.max(0.2, Math.min(currentScale + delta, 4));
+
+    applyTransformScale(selected, currentScale);
+
+    const output = document.getElementById('cssOutput');
+    const transform = selected.style.transform || '';
+    output.value += `${getSelector(selected)} {\n  transform: ${transform};\n}\n\n`;
+  }, { passive: false });
+}
+
+setTimeout(addExportButton, 500);
+
 
 })();
