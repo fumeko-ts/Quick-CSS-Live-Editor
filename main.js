@@ -1151,4 +1151,91 @@
     panel.insertBefore(closeBtn, panel.firstChild);
   }
   setTimeout(addCloseButton, 500);
+   const toggleBtn = document.createElement('button');
+  Object.assign(toggleBtn.style, {
+    position: 'fixed',
+    top: '10px',
+    left: '10px',
+    zIndex: 99999,
+    padding: '6px 12px',
+    fontSize: '13px',
+    fontWeight: 'bold',
+    background: '#1e1e1e',
+    color: '#fff',
+    border: '1px solid #555',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.5)'
+  });
+  toggleBtn.textContent = 'CSS Panel';
+  document.body.appendChild(toggleBtn);
+
+  // Create CSS input panel
+  const cssInjectorPanel = document.createElement('div');
+  Object.assign(cssInjectorPanel.style, {
+    position: 'fixed',
+    top: '50px',
+    left: '10px',
+    width: '420px',
+    height: '320px',
+    background: '#121212',
+    color: '#eee',
+    border: '1px solid #333',
+    borderRadius: '8px',
+    padding: '12px',
+    fontFamily: 'monospace',
+    fontSize: '12px',
+    zIndex: 99999,
+    display: 'none',
+    flexDirection: 'column',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.6)'
+  });
+
+  cssInjectorPanel.innerHTML = `
+    <textarea id="css-input" placeholder="Enter raw CSS..." style="flex: 1; width: 100%; height: 140px; background: #1e1e1e; color: #fff; border: 1px solid #444; border-radius: 4px; resize: none; margin-bottom: 10px; padding: 8px;"></textarea>
+    <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+      <button id="generate-js" style="flex: 1; padding: 6px; background: #2a2a2a; color: #fff; border: 1px solid #555; border-radius: 4px;">Generate JS</button>
+      <button id="copy-js" style="flex: 1; padding: 6px; background: #2a2a2a; color: #fff; border: 1px solid #555; border-radius: 4px;">Copy</button>
+    </div>
+    <pre id="js-output" style="flex: 1; background: #000; color: #0f0; padding: 8px; border-radius: 4px; overflow-y: auto; white-space: pre-wrap; border: 1px solid #222;"></pre>
+  `;
+
+  document.body.appendChild(cssInjectorPanel);
+
+  // Toggle panel
+  toggleBtn.onclick = () => {
+    cssInjectorPanel.style.display = cssInjectorPanel.style.display === 'none' ? 'flex' : 'none';
+  };
+
+  const generateBtn = cssInjectorPanel.querySelector('#generate-js');
+  const copyBtn = cssInjectorPanel.querySelector('#copy-js');
+  const input = cssInjectorPanel.querySelector('#css-input');
+  const output = cssInjectorPanel.querySelector('#js-output');
+
+  generateBtn.onclick = () => {
+    const rawCSS = input.value;
+    const escaped = rawCSS
+      .replace(/\\/g, '\\\\')
+      .replace(/`/g, '\\`')
+      .replace(/\$/g, '\\$');
+
+    const jsCode = `(() => {
+  const style = document.createElement('style');
+  style.textContent = \`\n${escaped}\n\`;
+  document.head.appendChild(style);
+})();`;
+
+    output.textContent = jsCode;
+  };
+
+  copyBtn.onclick = async () => {
+    const text = output.textContent;
+    try {
+      await navigator.clipboard.writeText(text);
+      copyBtn.textContent = 'Copied!';
+      setTimeout(() => (copyBtn.textContent = 'Copy'), 1000);
+    } catch (e) {
+      alert('Failed to copy to clipboard.');
+    }
+  };
 })();
