@@ -2,15 +2,14 @@
   const CSS_URL = 'https://raw.githubusercontent.com/fumeko-ts/Quick-CSS-Live-Editor/main/ui.css';
   const HOVER_HINTS_URL = 'https://raw.githubusercontent.com/fumeko-ts/Quick-CSS-Live-Editor/main/hover-text.atemp';
 
-  let styleOptions = {};
-  let selected = null;
-  let underCursorElements = [];
-  let underCursorIndex = 0;
-  let currentTab = 0;
-  let allowTransparentStyling = false;
-  let recolorAllText = false;
+  let styleOptions = {},
+    selected = null,
+    underCursorElements = [],
+    underCursorIndex = 0,
+    currentTab = 0,
+    allowTransparentStyling = false,
+    recolorAllText = false;
   const tabs = ['Panels', 'Text', 'Links', 'Images'];
-
   const predefinedColors = [
     "black", "white", "red", "green", "blue", "cyan", "magenta", "yellow", "gray",
     "lime", "maroon", "navy", "olive", "orange", "purple", "silver", "teal",
@@ -19,13 +18,13 @@
     "#4fc3f7", "#3f7fcf", "#222", "#1f1f1f", "rgba(79,195,247,0.75)", "transparent"
   ];
 
-  function isInsideLink(el) {
+  const isInsideLink = el => {
     while (el) {
-      if (el.tagName && el.tagName.toLowerCase() === 'a') return true;
+      if (el.tagName?.toLowerCase() === 'a') return true;
       el = el.parentElement;
     }
     return false;
-  }
+  };
 
   async function loadCSS(url) {
     try {
@@ -53,63 +52,61 @@
   }
 
   function createUI() {
-    const overlay = document.createElement('div');
-    overlay.id = 'element-styler-overlay';
-    document.body.appendChild(overlay);
-
-    const infoTooltip = document.createElement('div');
-    infoTooltip.id = 'element-styler-info-tooltip';
-    document.body.appendChild(infoTooltip);
-
+    const overlay = Object.assign(document.createElement('div'), {
+      id: 'element-styler-overlay'
+    });
+    const infoTooltip = Object.assign(document.createElement('div'), {
+      id: 'element-styler-info-tooltip'
+    });
     const panel = document.createElement('div');
     panel.id = 'element-styler-panel';
     panel.innerHTML = `
       <div class="title">Element Styler</div>
       <div id="tabButtons"></div>
       <div id="tabContent"></div>
-      <label for="toggleTransparent" class="transparent-label" style="display:block; margin-top:8px;">
-        <input type="checkbox" id="toggleTransparent" />
-        Allow styling transparent elements
+      <label style="display:block; margin-top:8px;" for="toggleTransparent">
+        <input type="checkbox" id="toggleTransparent" /> Allow styling transparent elements
       </label>
-      <label for="toggleRecolorAll" style="display:block; margin-top:8px;">
-        <input type="checkbox" id="toggleRecolorAll" />
-        Recolor all text (except links)
+      <label style="display:block; margin-top:8px;" for="toggleRecolorAll">
+        <input type="checkbox" id="toggleRecolorAll" /> Recolor all text (except links)
       </label>
-      <label for="toggleElementRemove" style="display:block; margin-top:8px;">
-        <input type="checkbox" id="toggleElementRemove" />
-        Element Remove
+      <label style="display:block; margin-top:8px;" for="toggleElementRemove">
+        <input type="checkbox" id="toggleElementRemove" /> Element Remove
       </label>
-      <label for="toggleRemoveChildren" style="display:block; margin-left: 20px; margin-top: 4px;">
-        <input type="checkbox" id="toggleRemoveChildren" />
-        Remove Children
+      <label style="display:block; margin-left:20px; margin-top:4px;" for="toggleRemoveChildren">
+        <input type="checkbox" id="toggleRemoveChildren" /> Remove Children
       </label>
       <button id="applyStyle">Apply</button>
-      <button id="resetStyle" style="margin-left: 8px;">Reset CSS</button>
-      <label for="cssOutput" class="output-label" style="display:block; margin-top:8px;">CSS Output:</label>
+      <button id="resetStyle" style="margin-left:8px;">Reset CSS</button>
+      <label class="output-label" style="display:block; margin-top:8px;" for="cssOutput">CSS Output:</label>
       <textarea id="cssOutput" readonly></textarea>
     `;
-    document.body.appendChild(panel);
+    const hintBox = Object.assign(document.createElement('div'), {
+      id: 'element-styler-hint-box'
+    });
 
-    const hintBox = document.createElement('div');
-    hintBox.id = 'element-styler-hint-box';
-    document.body.appendChild(hintBox);
-
-    return { overlay, infoTooltip, panel, hintBox };
+    [overlay, infoTooltip, panel, hintBox].forEach(el => document.body.appendChild(el));
+    return {
+      overlay,
+      infoTooltip,
+      panel,
+      hintBox
+    };
   }
 
   function createPropertyRow(propName, tabName) {
-    const description = styleOptions[tabName]?.[propName] || '';
+    const desc = styleOptions[tabName]?.[propName] || '';
     const wrapper = document.createElement('div');
     wrapper.className = 'property-row';
 
     const label = document.createElement('label');
     label.textContent = propName;
-    label.title = description;
+    label.title = desc;
     label.className = 'property-label';
     label.addEventListener('mouseenter', () => {
       const hintBox = document.getElementById('element-styler-hint-box');
       hintBox.style.display = 'block';
-      hintBox.textContent = description;
+      hintBox.textContent = desc;
     });
     label.addEventListener('mouseleave', () => {
       const hintBox = document.getElementById('element-styler-hint-box');
@@ -119,35 +116,20 @@
 
     const input = document.createElement('input');
     input.type = 'text';
-    input.setAttribute('data-style', propName);
+    input.dataset.style = propName;
     input.className = 'style-input';
 
     const colorProps = ['color', 'backgroundColor', 'border', 'boxShadow', 'hoverColor', 'textDecoration'];
     let dropdown = null;
-    if (
-      colorProps.some(k => k.toLowerCase() === propName.toLowerCase()) ||
-      description.toLowerCase().includes('color')
-    ) {
+    if (colorProps.some(k => k.toLowerCase() === propName.toLowerCase()) || desc.toLowerCase().includes('color')) {
       dropdown = document.createElement('select');
       dropdown.className = 'color-dropdown';
-      const emptyOption = document.createElement('option');
-      emptyOption.value = '';
-      emptyOption.textContent = '-- select color --';
-      dropdown.appendChild(emptyOption);
-      for (const color of predefinedColors) {
-        const option = document.createElement('option');
-        option.value = color;
-        option.textContent = color;
-        dropdown.appendChild(option);
-      }
-      dropdown.addEventListener('change', () => {
-        input.value = dropdown.value;
-      });
+      dropdown.appendChild(new Option('-- select color --', ''));
+      for (const c of predefinedColors) dropdown.appendChild(new Option(c, c));
+      dropdown.onchange = () => (input.value = dropdown.value);
     }
 
-    wrapper.appendChild(label);
-    wrapper.appendChild(input);
-    if (dropdown) wrapper.appendChild(dropdown);
+    [label, input, dropdown].forEach(el => el && wrapper.appendChild(el));
     return wrapper;
   }
 
@@ -155,12 +137,8 @@
     const tabContent = panel.querySelector('#tabContent');
     tabContent.innerHTML = '';
     const tabName = tabs[currentTab];
-    const properties = styleOptions[tabName] || {};
-
-    for (const propName in properties) {
-      const row = createPropertyRow(propName, tabName);
-      tabContent.appendChild(row);
-    }
+    const props = styleOptions[tabName] || {};
+    for (const p in props) tabContent.appendChild(createPropertyRow(p, tabName));
   }
 
   function updateTabButtons(panel) {
@@ -180,65 +158,85 @@
     });
   }
 
-  function updateInfoTooltip(element, event) {
-    const tooltip = document.getElementById('element-styler-info-tooltip');
-    if (!element) {
-      tooltip.style.opacity = 0;
-      return;
-    }
-    const tag = element.tagName.toLowerCase();
-    const id = element.id ? `#${element.id}` : '';
-    const classes = element.className ? '.' + element.className.trim().replace(/\s+/g, '.') : '';
-    tooltip.textContent = `${tag}${id}${classes}`;
-    if (event) {
-      const padding = 12;
-      let x = event.clientX + padding;
-      let y = event.clientY + padding;
-      const { innerWidth, innerHeight } = window;
-      const rect = tooltip.getBoundingClientRect();
-      if (x + rect.width > innerWidth) x = event.clientX - rect.width - padding;
-      if (y + rect.height > innerHeight) y = event.clientY - rect.height - padding;
-      tooltip.style.left = `${x}px`;
-      tooltip.style.top = `${y}px`;
-      tooltip.style.opacity = 1;
-    }
+  // Helper to position tooltip near cursor and keep inside viewport
+  function positionTooltip(e, tooltip) {
+    const pad = 12;
+    const {
+      innerWidth: w,
+      innerHeight: h
+    } = window;
+    const rect = tooltip.getBoundingClientRect();
+    let x = e.clientX + pad,
+      y = e.clientY + pad;
+    if (x + rect.width > w) x = e.clientX - rect.width - pad;
+    if (y + rect.height > h) y = e.clientY - rect.height - pad;
+    Object.assign(tooltip.style, {
+      left: x + 'px',
+      top: y + 'px',
+      opacity: 1
+    });
   }
 
-  function isVisible(element) {
-    const style = window.getComputedStyle(element);
-    return style && style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0';
+  let lastHovered = null;
+
+  function updateInfoTooltip(el, e) {
+    const tooltip = document.getElementById('element-styler-info-tooltip');
+    if (!el) {
+      tooltip.style.opacity = 0;
+      tooltip.innerHTML = '';
+      lastHovered = null;
+      return;
+    }
+
+    if (el === lastHovered) {
+      if (e) positionTooltip(e, tooltip);
+      return;
+    }
+    lastHovered = el;
+
+    const tag = el.tagName.toLowerCase();
+    const id = el.id ? `#${el.id}` : '';
+    const classes = el.className ? '.' + el.className.trim().replace(/\s+/g, '.') : '';
+
+    tooltip.innerHTML = '';
+
+    // Only add simple text info
+    const infoText = document.createElement('div');
+    infoText.textContent = `${tag}${id}${classes}`;
+    infoText.style.fontWeight = 'bold';
+    infoText.style.padding = '6px 10px';
+
+    tooltip.appendChild(infoText);
+
+    if (e) positionTooltip(e, tooltip);
+  }
+
+
+  function isVisible(el) {
+    const s = window.getComputedStyle(el);
+    return s && s.display !== 'none' && s.visibility !== 'hidden' && s.opacity !== '0';
   }
 
   function isScrollable(el) {
-    const style = window.getComputedStyle(el);
-    return ['auto', 'scroll'].includes(style.overflow) ||
-      ['auto', 'scroll'].includes(style.overflowX) ||
-      ['auto', 'scroll'].includes(style.overflowY);
+    const s = window.getComputedStyle(el);
+    return ['auto', 'scroll'].some(v => [s.overflow, s.overflowX, s.overflowY].includes(v));
   }
 
   function clearInlineColorsInsideLinks() {
-    document.querySelectorAll('a').forEach(a => {
-      a.querySelectorAll('*').forEach(child => {
-        if (child.style && child.style.color) {
-          child.style.color = '';
-        }
-      });
+    document.querySelectorAll('a *').forEach(el => {
+      if (el.style?.color) el.style.color = '';
     });
   }
 
   function getSelector(el) {
     if (!el) return '';
     if (el.id) return `#${el.id}`;
-    if (el.className) {
-      const classes = el.className.trim().split(/\s+/).join('.');
-      return `${el.tagName.toLowerCase()}.${classes}`;
-    }
+    if (el.className) return `${el.tagName.toLowerCase()}.${el.className.trim().split(/\s+/).join('.')}`;
     return el.tagName.toLowerCase();
   }
 
   function clearRemoveRules(outputEl) {
-    const lines = outputEl.value.split('\n');
-    const filtered = lines.filter(line => !line.includes('/* element-remove') && !line.includes('/* element-remove-children'));
+    const filtered = outputEl.value.split('\n').filter(line => !line.includes('/* element-remove') && !line.includes('/* element-remove-children'));
     outputEl.value = filtered.join('\n').trim() + (filtered.length ? '\n\n' : '');
   }
 
@@ -247,12 +245,24 @@
     panel.querySelector('#toggleRemoveChildren').checked = false;
   }
 
+  // Throttle function to limit frequency of calls
+  function throttle(fn, limit) {
+    let lastCall = 0;
+    return function(...args) {
+      const now = Date.now();
+      if (now - lastCall >= limit) {
+        lastCall = now;
+        fn.apply(this, args);
+      }
+    };
+  }
+
   function setupEventListeners(overlay, infoTooltip, panel, hintBox) {
     const toggleElementRemove = panel.querySelector('#toggleElementRemove');
     const toggleRemoveChildren = panel.querySelector('#toggleRemoveChildren');
     const output = panel.querySelector('#cssOutput');
 
-    document.addEventListener('mousemove', e => {
+    document.addEventListener('mousemove', throttle(e => {
       if (!e.altKey) {
         if (!selected) {
           overlay.style.display = 'none';
@@ -263,7 +273,7 @@
         return;
       }
       underCursorElements = document.elementsFromPoint(e.clientX, e.clientY)
-        .filter(el => el !== overlay && el !== infoTooltip && el !== panel && el !== hintBox);
+        .filter(el => ![overlay, infoTooltip, panel, hintBox].includes(el));
       if (underCursorElements.length) {
         underCursorIndex = 0;
         selected = underCursorElements[0];
@@ -279,22 +289,19 @@
 
         const selector = getSelector(selected);
         const cssText = output.value;
-
         toggleElementRemove.checked = cssText.includes(`${selector} { display: none; /* element-remove */`);
         toggleRemoveChildren.checked = cssText.includes(`${selector} > * { display: none; /* element-remove-children */`);
-
       } else {
         selected = null;
         overlay.style.display = 'none';
         updateInfoTooltip(null);
         clearRemoveToggles(panel);
       }
-    });
+    }, 50)); // throttle to 20fps
 
     document.addEventListener('wheel', e => {
       if (!e.altKey || underCursorElements.length <= 1) return;
-      const target = e.target;
-      if (isScrollable(target)) return;
+      if (isScrollable(e.target)) return;
       e.preventDefault();
       e.stopPropagation();
       const dir = Math.sign(e.deltaY);
@@ -309,91 +316,84 @@
         width: `${r.width}px`,
         height: `${r.height}px`
       });
-
       const selector = getSelector(selected);
       const cssText = output.value;
       toggleElementRemove.checked = cssText.includes(`${selector} { display: none; /* element-remove */`);
       toggleRemoveChildren.checked = cssText.includes(`${selector} > * { display: none; /* element-remove-children */`);
-    }, { passive: false });
+    }, {
+      passive: false
+    });
 
-    toggleElementRemove.addEventListener('change', () => {
+    toggleElementRemove.onchange = () => {
       if (!selected) return;
       const selector = getSelector(selected);
       if (!selector) return;
-
       clearRemoveRules(output);
-
       if (toggleElementRemove.checked) {
         output.value += `${selector} { display: none; /* element-remove */ }\n\n`;
-        if (toggleRemoveChildren.checked) {
+        if (toggleRemoveChildren.checked)
           output.value += `${selector} > * { display: none; /* element-remove-children */ }\n\n`;
-        }
       } else {
         toggleRemoveChildren.checked = false;
       }
-    });
+    };
 
-    toggleRemoveChildren.addEventListener('change', () => {
+    toggleRemoveChildren.onchange = () => {
       if (!selected) return;
       const selector = getSelector(selected);
       if (!selector) return;
-
       clearRemoveRules(output);
-
       if (toggleElementRemove.checked && toggleRemoveChildren.checked) {
         output.value += `${selector} { display: none; /* element-remove */ }\n\n`;
         output.value += `${selector} > * { display: none; /* element-remove-children */ }\n\n`;
       } else if (toggleElementRemove.checked) {
         output.value += `${selector} { display: none; /* element-remove */ }\n\n`;
       }
-    });
+    };
+
+    panel.querySelector('#toggleTransparent').onchange = e => allowTransparentStyling = e.target.checked;
+    panel.querySelector('#toggleRecolorAll').onchange = e => recolorAllText = e.target.checked;
 
     panel.querySelector('#applyStyle').onclick = () => {
       if (!selected && currentTab !== 1) return;
-
       if (!document.body.contains(selected)) {
         alert('Selected element no longer exists.');
         selected = null;
         clearRemoveToggles(panel);
         return;
       }
-
       if (!allowTransparentStyling && selected && !isVisible(selected) && selected.tagName.toLowerCase() !== 'img') {
         alert('Selected element is invisible or transparent — styles will not be applied unless toggle is enabled.');
         return;
       }
-
       const inputs = panel.querySelectorAll('input[data-style]');
-
       if (currentTab === 1) {
         if (recolorAllText) {
           clearInlineColorsInsideLinks();
           const textElements = Array.from(document.body.querySelectorAll('*')).filter(el => {
-            if (el.tagName.toLowerCase() === 'a' || el.tagName.toLowerCase() === 'img') return false;
+            const tag = el.tagName.toLowerCase();
+            if (tag === 'a' || tag === 'img') return false;
             if (!el.textContent.trim()) return false;
             if (isInsideLink(el)) return false;
             return true;
           });
-
           textElements.forEach(el => {
             inputs.forEach(input => {
-              const key = input.getAttribute('data-style');
+              const key = input.dataset.style;
               let val = input.value.trim();
               if (!val) return;
               if (/^\d+(\.\d+)?$/.test(val) && key !== 'color') val += 'px';
               el.style[key] = val;
             });
           });
-
           inputs.forEach(input => {
-            const key = input.getAttribute('data-style');
+            const key = input.dataset.style;
             let val = input.value.trim();
             if (!val) return;
             if (/^\d+(\.\d+)?$/.test(val) && key !== 'color') val += 'px';
             const cssKey = key.replace(/[A-Z]/g, m => '-' + m.toLowerCase());
-            panel.querySelector('#cssOutput').value += `*:not(a):not(img) {\n  ${cssKey}: ${val};\n}\n\n`;
+            output.value += `*:not(a):not(img) {\n  ${cssKey}: ${val};\n}\n\n`;
           });
-
         } else {
           if (!selected) return;
           if (selected.tagName.toLowerCase() === 'a' || isInsideLink(selected)) {
@@ -401,147 +401,99 @@
             return;
           }
           inputs.forEach(input => {
-            const key = input.getAttribute('data-style');
+            const key = input.dataset.style;
             let val = input.value.trim();
             if (!val) return;
             if (/^\d+(\.\d+)?$/.test(val) && key !== 'color') val += 'px';
             selected.style[key] = val;
           });
-
           inputs.forEach(input => {
-            const key = input.getAttribute('data-style');
+            const key = input.dataset.style;
             let val = input.value.trim();
             if (!val) return;
             if (/^\d+(\.\d+)?$/.test(val) && key !== 'color') val += 'px';
-            const cssKey = key.replace(/[A-Z]/g, m => '-' + m.toLowerCase());
-            const tag = selected.tagName.toLowerCase();
-            const id = selected.id ? '#' + selected.id : '';
-            const classes = selected.className ? '.' + selected.className.trim().replace(/\s+/g, '.') : '';
-            const selector = id || classes || tag;
-            panel.querySelector('#cssOutput').value += `${selector} {\n  ${cssKey}: ${val};\n}\n\n`;
+            output.value += `${getSelector(selected)} {\n  ${key.replace(/[A-Z]/g, m => '-' + m.toLowerCase())}: ${val};\n}\n\n`;
           });
         }
       } else if (currentTab === 2) {
-        let styleTag = document.getElementById('link-hover-style');
-        if (!styleTag) {
-          styleTag = document.createElement('style');
-          styleTag.id = 'link-hover-style';
-          document.head.appendChild(styleTag);
+        if (!selected || !isInsideLink(selected)) {
+          alert('Please select a link element for Links tab styling.');
+          return;
         }
-        clearInlineColorsInsideLinks();
-
-        const newStyles = [];
-
         inputs.forEach(input => {
-          const key = input.getAttribute('data-style');
+          const key = input.dataset.style;
           let val = input.value.trim();
           if (!val) return;
-
-          if (key !== 'hoverColor' && /^\d+(\.\d+)?$/.test(val)) val += 'px';
-
-          if (key === 'hoverColor') {
-            newStyles.push(`a:hover { color: ${val}; }`);
-            panel.querySelector('#cssOutput').value += `a:hover {\n  color: ${val};\n}\n\n`;
-          } else {
-            document.querySelectorAll('a').forEach(a => { a.style[key] = val; });
-            const cssKey = key.replace(/[A-Z]/g, m => '-' + m.toLowerCase());
-            panel.querySelector('#cssOutput').value += `a {\n  ${cssKey}: ${val};\n}\n\n`;
-          }
+          if (/^\d+(\.\d+)?$/.test(val) && key !== 'color') val += 'px';
+          selected.style[key] = val;
         });
-
-        styleTag.innerHTML = newStyles.join('\n') + '\n';
-
+        inputs.forEach(input => {
+          const key = input.dataset.style;
+          let val = input.value.trim();
+          if (!val) return;
+          if (/^\d+(\.\d+)?$/.test(val) && key !== 'color') val += 'px';
+          output.value += `${getSelector(selected)} {\n  ${key.replace(/[A-Z]/g, m => '-' + m.toLowerCase())}: ${val};\n}\n\n`;
+        });
+      } else if (currentTab === 3) {
+        if (!selected || selected.tagName.toLowerCase() !== 'img') {
+          alert('Please select an image element for Images tab styling.');
+          return;
+        }
+        inputs.forEach(input => {
+          const key = input.dataset.style;
+          let val = input.value.trim();
+          if (!val) return;
+          if (/^\d+(\.\d+)?$/.test(val) && key !== 'color') val += 'px';
+          selected.style[key] = val;
+        });
+        inputs.forEach(input => {
+          const key = input.dataset.style;
+          let val = input.value.trim();
+          if (!val) return;
+          if (/^\d+(\.\d+)?$/.test(val) && key !== 'color') val += 'px';
+          output.value += `${getSelector(selected)} {\n  ${key.replace(/[A-Z]/g, m => '-' + m.toLowerCase())}: ${val};\n}\n\n`;
+        });
       } else {
-        let styleTag = document.getElementById('hover-style');
-        if (!styleTag) {
-          styleTag = document.createElement('style');
-          styleTag.id = 'hover-style';
-          document.head.appendChild(styleTag);
-        }
-
-        const newStyles = [];
-
+        // Panels tab
+        if (!selected) return;
         inputs.forEach(input => {
-          const key = input.getAttribute('data-style');
+          const key = input.dataset.style;
           let val = input.value.trim();
           if (!val) return;
-
-          if (key !== 'hoverColor' && /^\d+(\.\d+)?$/.test(val)) val += 'px';
-
-          if (key === 'hoverColor') {
-            selected.setAttribute('data-hover-style', val);
-            newStyles.push(`${selected.tagName.toLowerCase()}[data-hover-style]:hover { color: ${val}; }`);
-            panel.querySelector('#cssOutput').value += `:hover {\n  color: ${val};\n}\n\n`;
-          } else {
-            selected.style[key] = val;
-            const cssKey = key.replace(/[A-Z]/g, m => '-' + m.toLowerCase());
-            const tag = selected.tagName.toLowerCase();
-            const id = selected.id ? '#' + selected.id : '';
-            const classes = selected.className ? '.' + selected.className.trim().replace(/\s+/g, '.') : '';
-            const selector = id || classes || tag;
-            panel.querySelector('#cssOutput').value += `${selector} {\n  ${cssKey}: ${val};\n}\n\n`;
-          }
+          if (/^\d+(\.\d+)?$/.test(val) && key !== 'color') val += 'px';
+          selected.style[key] = val;
         });
-
-        styleTag.innerHTML = newStyles.join('\n') + '\n';
+        inputs.forEach(input => {
+          const key = input.dataset.style;
+          let val = input.value.trim();
+          if (!val) return;
+          if (/^\d+(\.\d+)?$/.test(val) && key !== 'color') val += 'px';
+          output.value += `${getSelector(selected)} {\n  ${key.replace(/[A-Z]/g, m => '-' + m.toLowerCase())}: ${val};\n}\n\n`;
+        });
       }
-
-      if (selected) {
-        clearRemoveRules(output);
-        const selector = getSelector(selected);
-        if (toggleElementRemove.checked) {
-          output.value += `${selector} { display: none; /* element-remove */ }\n\n`;
-          if (toggleRemoveChildren.checked) {
-            output.value += `${selector} > * { display: none; /* element-remove-children */ }\n\n`;
-          }
-        }
-      }
-
-      renderTab(panel);
     };
 
     panel.querySelector('#resetStyle').onclick = () => {
-      const styleHover = document.getElementById('hover-style');
-      const styleLinkHover = document.getElementById('link-hover-style');
-      if (styleHover) styleHover.innerHTML = '';
-      if (styleLinkHover) styleLinkHover.innerHTML = '';
-
       if (selected) {
-        selected.removeAttribute('data-hover-style');
-        selected.style.cssText = '';
+        selected.style = '';
+        clearRemoveRules(output);
+        output.value = '';
       }
-
-      clearInlineColorsInsideLinks();
-
-      const output = panel.querySelector('#cssOutput');
-      output.value = '';
-
-      renderTab(panel);
-
-      clearRemoveToggles(panel);
     };
-
-    let lastSelected = null;
-    const observer = new MutationObserver(() => {
-      if (selected !== lastSelected) {
-        lastSelected = selected;
-        clearRemoveToggles(panel);
-      }
-    });
-    observer.observe(document.body, { subtree: true, childList: true });
-
   }
 
-  async function init() {
+  (async () => {
     await loadCSS(CSS_URL);
     await loadHoverHints();
-
-    const { overlay, infoTooltip, panel, hintBox } = createUI();
-
+    const {
+      overlay,
+      infoTooltip,
+      panel,
+      hintBox
+    } = createUI();
     updateTabButtons(panel);
     renderTab(panel);
     setupEventListeners(overlay, infoTooltip, panel, hintBox);
-  }
+  })();
 
-  init();
 })();
