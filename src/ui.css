@@ -43,11 +43,12 @@
   border: 1px solid #444;
   z-index: 2147483647;
   min-width: 340px;
-  max-width: 380px;
+  max-width: min(380px, calc(100vw - 40px));
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
   user-select: none;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 }
 
 #element-styler-panel #tabButtons {
@@ -82,10 +83,28 @@
 
 #element-styler-panel #tabContent {
   margin-bottom: 16px;
-  max-height: 360px;
+  max-height: min(360px, 50vh);
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: #4fc3f7 #1f1f1f;
+}
+
+/* Scrollbar styling for WebKit browsers */
+#element-styler-panel #tabContent::-webkit-scrollbar,
+#element-styler-panel #cssOutput::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+#element-styler-panel #tabContent::-webkit-scrollbar-track,
+#element-styler-panel #cssOutput::-webkit-scrollbar-track {
+  background: #1f1f1f;
+}
+
+#element-styler-panel #tabContent::-webkit-scrollbar-thumb,
+#element-styler-panel #cssOutput::-webkit-scrollbar-thumb {
+  background-color: #4fc3f7;
+  border-radius: 4px;
 }
 
 #element-styler-panel input[data-style] {
@@ -147,16 +166,6 @@
 
 #element-styler-panel #applyStyle:hover {
   background: #40a7d9;
-  margin-top: 8px;
-  width: 100%;
-  border: none;
-  border-radius: 6px;
-  padding: 10px 0;
-  font-weight: 700;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  user-select: none;
 }
 
 #element-styler-panel #resetStyle {
@@ -184,6 +193,7 @@
   margin-top: 12px;
   scrollbar-width: thin;
   scrollbar-color: #4fc3f7 #222;
+  max-height: 30vh;
 }
 
 #element-styler-hint-box {
@@ -205,6 +215,53 @@
   cursor: default;
   box-sizing: border-box;
   box-shadow: 0 0 15px #4fc3f7cc;
+}
+
+.property-row {
+  margin-bottom: 12px;
+}
+
+.property-label {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.color-dropdown {
+  width: 100%;
+  margin-top: 6px;
+  background: #222;
+  color: #d0d0d0;
+  border: 1.5px solid #555;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-family: 'Consolas', monospace;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  #element-styler-panel {
+    right: 10px;
+    left: 10px;
+    max-width: calc(100vw - 20px);
+    min-width: auto;
+    padding: 12px 14px;
+  }
+  
+  #element-styler-panel #tabButtons {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+  
+  #element-styler-panel #tabButtons button {
+    flex: none;
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  
+  #element-styler-panel #cssOutput {
+    height: 100px;
+  }
 }
 
 /* Additional styling for theme tab buttons */
