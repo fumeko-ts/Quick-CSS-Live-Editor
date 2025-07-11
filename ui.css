@@ -1,0 +1,155 @@
+*Overlay border box around hovered element*/
+#element-styler-overlay {
+  position: absolute;
+  border: 2px solid #4fc3f7;
+  border-radius: 3px;
+  pointer-events: none;
+  z-index: 2147483647;
+  display: none;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.5);
+}
+/*Tooltip near cursor with element info*/
+#element-styler-info-tooltip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  max-width: 280px;
+  background-color: rgba(0,0,0,0.75);
+  color: #4fc3f7;
+  font-family: 'Minecraftia', monospace, monospace;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  pointer-events: none;
+  user-select: none;
+  white-space: normal;
+  z-index: 2147483647;
+  transform: translate(10px, 10px);
+  transition: opacity 0.15s;
+  opacity: 0;
+}
+/*Main control panel*/
+#element-styler-panel {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #2d2d2d;
+  color: #e0e0e0;
+  padding: 12px;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  font-size: 13px;
+  border-radius: 8px;
+  border: 1px solid #444;
+  z-index: 2147483647;
+  min-width: 320px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  user-select: none;
+}
+/*Tab buttons container*/
+#element-styler-panel #tabButtons {
+  margin: 10px 0 12px;
+  display: flex;
+}
+/*Tab buttons*/
+#element-styler-panel #tabButtons button {
+  margin-right: 6px;
+  background: #2d2d2d;
+  color: #e0e0e0;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+  user-select: none;
+}
+
+#element-styler-panel #tabButtons button.active,
+#element-styler-panel #tabButtons button:hover {
+  background: #3a3a3a;
+}
+/*Tab content area*/
+#element-styler-panel #tabContent {
+  margin-bottom: 12px;
+  max-height: 360px;
+  overflow-y: auto;
+}
+/*Inputs for style keys*/
+#element-styler-panel input[data-style] {
+  width: 100%;
+  background: #252525;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 6px;
+  color: #e0e0e0;
+  font-family: monospace;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+/*Labels for inputs*/
+#element-styler-panel label {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 4px;
+  cursor: default;
+  user-select: none;
+}
+/*Checkbox label with gap*/
+#element-styler-panel label[for="toggleTransparent"] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+/*Apply button*/
+#element-styler-panel #applyStyle {
+  margin-top: 8px;
+  width: 100%;
+  background: #4fc3f7;
+  color: #000;
+  border: none;
+  border-radius: 4px;
+  padding: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#element-styler-panel #applyStyle:hover {
+  background: #40b0e0;
+}
+/*CSS Output textarea*/
+#element-styler-panel #cssOutput {
+  width: 100%;
+  height: 120px;
+  background: #252525;
+  color: #e0e0e0;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 6px;
+  font-family: monospace;
+  resize: vertical;
+  box-sizing: border-box;
+}
+/*Vertical hover hint box*/
+#element-styler-hint-box {
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: rgba(40, 40, 40, 0.95);
+  color: #a0c8f0;
+  font-family: 'Segoe UI', monospace, monospace;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  max-height: 150px;
+  overflow-y: auto;
+  white-space: normal;
+  z-index: 2147483647;
+  display: none;
+  writing-mode: tb-rl;         /*Top to bottom, right to left*/
+  text-orientation: upright;   /*Upright characters*/
+  user-select: none;
+  cursor: default;
+  box-sizing: border-box;
+}
