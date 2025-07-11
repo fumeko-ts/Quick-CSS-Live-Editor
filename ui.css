@@ -55,6 +55,7 @@
   display: flex;
   gap: 8px;
   user-select: none;
+  flex-wrap: wrap;
 }
 
 #element-styler-panel #tabButtons button {
@@ -68,6 +69,7 @@
   font-weight: 600;
   font-size: 13px;
   transition: background-color 0.25s ease, border-color 0.25s ease;
+  min-width: 60px;
 }
 
 #element-styler-panel #tabButtons button.active,
@@ -193,4 +195,26 @@
   cursor: default;
   box-sizing: border-box;
   box-shadow: 0 0 15px #4fc3f7cc;
+}
+
+/* Additional styling for theme tab buttons */
+#element-styler-panel #tabContent button {
+  display: inline-block;
+  background: #2a2a2a;
+  color: #eee;
+  border: 1px solid #555;
+  border-radius: 5px;
+  padding: 8px 14px;
+  margin: 6px 6px 0 0;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  transition: all 0.25s ease;
+}
+
+#element-styler-panel #tabContent button:hover {
+  background: #3f7fcf;
+  color: #fff;
+  border-color: #3f7fcf;
+  box-shadow: 0 0 6px #3f7fcf88;
 }
