@@ -7,7 +7,7 @@
   display: none;
   box-shadow: 0 0 0 1px rgba(0,0,0,0.5);
 }
-/*Tooltip near cursor with element info*/
+
 #element-styler-info-tooltip {
   position: fixed;
   top: 0;
@@ -27,7 +27,7 @@
   transition: opacity 0.15s;
   opacity: 0;
 }
-/*Main control panel*/
+
 #element-styler-panel {
   position: fixed;
   top: 20px;
@@ -44,12 +44,12 @@
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
   user-select: none;
 }
-/*Tab buttons container*/
+
 #element-styler-panel #tabButtons {
   margin: 10px 0 12px;
   display: flex;
 }
-/*Tab buttons*/
+
 #element-styler-panel #tabButtons button {
   margin-right: 6px;
   background: #2d2d2d;
@@ -66,13 +66,13 @@
 #element-styler-panel #tabButtons button:hover {
   background: #3a3a3a;
 }
-/*Tab content area*/
+
 #element-styler-panel #tabContent {
   margin-bottom: 12px;
   max-height: 360px;
   overflow-y: auto;
 }
-/*Inputs for style keys*/
+
 #element-styler-panel input[data-style] {
   width: 100%;
   background: #252525;
@@ -84,7 +84,7 @@
   font-size: 13px;
   box-sizing: border-box;
 }
-/*Labels for inputs*/
+
 #element-styler-panel label {
   display: block;
   font-size: 12px;
@@ -92,7 +92,7 @@
   cursor: default;
   user-select: none;
 }
-/*Checkbox label with gap*/
+
 #element-styler-panel label[for="toggleTransparent"] {
   display: flex;
   align-items: center;
@@ -100,7 +100,7 @@
   margin-bottom: 12px;
   cursor: pointer;
 }
-/*Apply button*/
+
 #element-styler-panel #applyStyle {
   margin-top: 8px;
   width: 100%;
@@ -117,7 +117,7 @@
 #element-styler-panel #applyStyle:hover {
   background: #40b0e0;
 }
-/*CSS Output textarea*/
+
 #element-styler-panel #cssOutput {
   width: 100%;
   height: 120px;
@@ -130,7 +130,7 @@
   resize: vertical;
   box-sizing: border-box;
 }
-/*Vertical hover hint box*/
+
 #element-styler-hint-box {
   position: fixed;
   top: 0;
@@ -146,8 +146,8 @@
   white-space: normal;
   z-index: 2147483647;
   display: none;
-  writing-mode: tb-rl;         /*Top to bottom, right to left*/
-  text-orientation: upright;   /*Upright characters*/
+  writing-mode: tb-rl;
+  text-orientation: upright;
   user-select: none;
   cursor: default;
   box-sizing: border-box;
