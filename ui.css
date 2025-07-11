@@ -21,10 +21,10 @@
   border-radius: 4px;
   pointer-events: none;
   user-select: none;
-  white-space: normal;
+  white-space: pre-line;
   z-index: 2147483647;
   transform: translate(10px, 10px);
-  transition: opacity 0.15s;
+  transition: opacity 0.15s ease;
   opacity: 0;
 }
 
@@ -127,6 +127,7 @@
   border-radius: 4px;
   padding: 6px;
   font-family: monospace;
+  white-space: pre;
   resize: vertical;
   box-sizing: border-box;
 }
@@ -146,36 +147,7 @@
   white-space: normal;
   z-index: 2147483647;
   display: none;
-  writing-mode: tb-rl;
-  text-orientation: upright;
   user-select: none;
   cursor: default;
   box-sizing: border-box;
-}
-
-#element-styler-info-tooltip {
-  /* remove writing mode styles if any */
-  writing-mode: initial !important;
-  text-orientation: initial !important;
-  white-space: pre-line;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  transition: opacity 0.15s ease;
-  pointer-events: none;
-  user-select: none;
-}
-
-#element-styler-hint-box {
-  writing-mode: initial !important;
-  text-orientation: initial !important;
-  white-space: pre-line;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  transition: opacity 0.15s ease;
-  pointer-events: none;
-  user-select: none;
-  /* keep rest of your styling */
-}
-
-#cssOutput {
-  white-space: pre; /* Preserve formatting */
-  font-family: monospace;
 }
