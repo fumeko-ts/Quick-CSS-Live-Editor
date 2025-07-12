@@ -1,5 +1,5 @@
 (() => {
-
+ //v4
     const CSS = `
   :root {
     --atemp-bg: #161a20;
@@ -267,86 +267,122 @@
     const tabConfig = {
         panel: {
             fields: [{
-                k: "backgroundColor"
+                k: "backgroundColor",
+                type: "color"
             }, {
-                k: "border"
+                k: "border",
+                type: "text"
             }, {
-                k: "padding"
+                k: "padding",
+                type: "text"
             }, {
-                k: "margin"
+                k: "margin",
+                type: "text"
             }, {
-                k: "boxShadow"
+                k: "boxShadow",
+                type: "text"
             }, {
-                k: "borderRadius"
+                k: "borderRadius",
+                type: "text"
             }, {
-                k: "opacity"
+                k: "opacity",
+                type: "number"
             }]
         },
         text: {
             fields: [{
-                k: "color"
+                k: "color",
+                type: "color"
             }, {
-                k: "fontSize"
+                k: "fontSize",
+                type: "text"
             }, {
-                k: "fontWeight"
+                k: "fontWeight",
+                type: "number"
             }, {
-                k: "lineHeight"
+                k: "lineHeight",
+                type: "text"
             }, {
-                k: "textShadow"
+                k: "textShadow",
+                type: "text"
             }, {
-                k: "textAlign"
+                k: "textAlign",
+                type: "text"
             }, {
-                k: "fontStyle"
+                k: "fontStyle",
+                type: "text"
             }]
         },
         img: {
             fields: [{
-                k: "width"
+                k: "width",
+                type: "text"
             }, {
-                k: "height"
+                k: "height",
+                type: "text"
             }, {
-                k: "borderRadius"
+                k: "borderRadius",
+                type: "text"
             }, {
-                k: "opacity"
+                k: "opacity",
+                type: "number"
             }, {
-                k: "filter"
+                k: "filter",
+                type: "text"
             }, {
-                k: "objectFit"
+                k: "objectFit",
+                type: "text"
             }, {
-                k: "mixBlendMode"
+                k: "mixBlendMode",
+                type: "text"
             }]
         },
         advanced: {
             fields: [{
-                k: "zIndex"
+                k: "zIndex",
+                type: "number"
             }, {
-                k: "pointerEvents"
+                k: "pointerEvents",
+                type: "text"
             }, {
-                k: "display"
+                k: "display",
+                type: "text"
             }, {
-                k: "position"
+                k: "position",
+                type: "text"
             }, {
-                k: "top"
+                k: "top",
+                type: "text"
             }, {
-                k: "left"
+                k: "left",
+                type: "text"
             }, {
-                k: "right"
+                k: "right",
+                type: "text"
             }, {
-                k: "bottom"
+                k: "bottom",
+                type: "text"
             }, {
-                k: "backgroundImage"
+                k: "backgroundImage",
+                type: "text"
             }, {
-                k: "backgroundSize"
+                k: "backgroundSize",
+                type: "text"
             }, {
-                k: "backgroundRepeat"
+                k: "backgroundRepeat",
+                type: "text"
             }, {
-                k: "backgroundPosition"
+                k: "backgroundPosition",
+                type: "text"
             }, {
-                k: "borderColor"
+                k: "borderColor",
+                type: "color"
             }, {
-                k: "borderWidth"
+                k: "borderWidth",
+                type: "text"
             }, {
-                k: "borderStyle"
+                k: "borderStyle",
+                type: "text"
             }]
         }
     };
@@ -382,24 +418,52 @@
     }
 
     function updateCSSOut() {
-
-        let latestSelector = "";
-        if (selected) latestSelector = getSelector(selected);
         if (!selected) return updateCssOutBox();
-        let css = getSelector(selected) + " {\n";
-        Object.keys(selected.style)
-            .forEach(k => {
-                if (typeof selected.style[k] === "string" && selected.style[k]) {
-                    css += `  ${k.replace(/[A-Z]/g, m => "-" + m.toLowerCase())}: ${selected.style[k]};\n`;
-                }
-            });
-        css += "}\n";
 
-        if (css.replace(/\s+/g, '') !== (cssMap[latestSelector] || "")
-            .replace(/\s+/g, ''))
-            cssMap[latestSelector] = css;
+        const selector = getSelector(selected);
+        const styleMap = {};
+
+        Object.keys(selected.style).forEach(k => {
+            if (typeof selected.style[k] === "string" && selected.style[k] && !/^\d+$/.test(k)) {
+                const propName = k.replace(/[A-Z]/g, m => `-${m.toLowerCase()}`);
+                styleMap[propName] = selected.style[k];
+            }
+        });
+
+        const groupedProps = {
+            'border': ['border-top', 'border-right', 'border-bottom', 'border-left'],
+            'margin': ['margin-top', 'margin-right', 'margin-bottom', 'margin-left'],
+            'padding': ['padding-top', 'padding-right', 'padding-bottom', 'padding-left']
+        };
+
+        Object.entries(groupedProps).forEach(([group, props]) => {
+            if (props.every(p => styleMap[p] && styleMap[p] === styleMap[props[0]])) {
+                styleMap[group] = styleMap[props[0]];
+                props.forEach(p => delete styleMap[p]);
+            }
+        });
+
+        const finalProps = Object.keys(styleMap)
+            .sort()
+            .filter(prop => styleMap[prop] && !prop.startsWith('webkit-'));
+
+        if (finalProps.length > 0) {
+            let css = `${selector} {\n`;
+            finalProps.forEach(prop => {
+                css += `  ${prop}: ${styleMap[prop]};\n`;
+            });
+            css += '}\n';
+
+            if (css.replace(/\s+/g, '') !== (cssMap[selector] || '').replace(/\s+/g, '')) {
+                cssMap[selector] = css;
+            }
+        } else {
+            delete cssMap[selector];
+        }
+
         updateCssOutBox();
     }
+
 
     function updateCssOutBox() {
         const box = document.getElementById("atemp-cssout");
@@ -629,48 +693,48 @@
         content.innerHTML = "";
         if (tab === "help") {
             content.innerHTML = `
-  <div class="atemp-section">
-    <div class="atemp-label">Keyboard & Mouse Controls</div>
-    <ul style="padding-left:19px;line-height:1.7em;">
-      <li><b>Shift + Hover</b>: Select element under mouse</li>
-      <li><b>Shift + Scroll (Mouse Wheel)</b>: Cycle through stacked elements under cursor (for covered/overlapping elements)</li>
-      <li><b>Arrow Keys (<b>while Shift+Hover</b>)</b>: Resize selected element (width/height)</li>
-      <li><b>Shift + Arrow Keys (with Shift+Hover)</b>: Resize faster (10px steps)</li>
-      <li><b>Shift + X</b>: Toggle Move-Mode (move via arrow keys, see below)</li>
-      <li><b>Arrow Keys (Move-Mode)</b>: Move element (top/left)</li>
-      <li><b>Shift + Arrow Keys (Move-Mode)</b>: Move faster (10px steps)</li>
-      <li><b>Shift + C (Move-Mode)</b>: Toggle if children move with parent</li>
-      <li><b>Escape (Move-Mode)</b>: Exit move mode</li>
-      <li><b>Panel</b>: Drag header to move, drag bottom-right corner to resize</li>
-      <li><b>Copy CSS</b>: Click Export to copy all CSS output</li>
-    </ul>
-    <div style="margin-top:8px;color:var(--atemp-muted);font-size:.98em;">
-      <b>Tip:</b> If the element you want to resize is covered, hold <b>Shift</b> and use your mouse wheel to scroll through the stacked elements until the desired one is selected, then resize with <b>Shift+Arrow keys</b>.
-      <br>All CSS output appears in the textbox at the bottom.<br>
-      You can export or copy-paste this for later use.
-    </div>
+<div class="atemp-section">
+  <div class="atemp-label">Keyboard & Mouse Controls</div>
+  <ul style="padding-left:19px;line-height:1.7em;">
+    <li><b>Shift + Hover</b>: Select element under mouse</li>
+    <li><b>Shift + Scroll (Mouse Wheel)</b>: Cycle through stacked elements under cursor (for covered/overlapping elements)</li>
+    <li><b>Arrow Keys (<b>while Shift+Hover</b>)</b>: Resize selected element (width/height)</li>
+    <li><b>Shift + Arrow Keys (with Shift+Hover)</b>: Resize faster (10px steps)</li>
+    <li><b>Shift + X</b>: Toggle Move-Mode (move via arrow keys, see below)</li>
+    <li><b>Arrow Keys (Move-Mode)</b>: Move element (top/left)</li>
+    <li><b>Shift + Arrow Keys (Move-Mode)</b>: Move faster (10px steps)</li>
+    <li><b>Shift + C (Move-Mode)</b>: Toggle if children move with parent</li>
+    <li><b>Escape (Move-Mode)</b>: Exit move mode</li>
+    <li><b>Panel</b>: Drag header to move, drag bottom-right corner to resize</li>
+    <li><b>Copy CSS</b>: Click Export to copy all CSS output</li>
+  </ul>
+  <div style="margin-top:8px;color:var(--atemp-muted);font-size:.98em;">
+    <b>Tip:</b> If the element you want to resize is covered, hold <b>Shift</b> and use your mouse wheel to scroll through the stacked elements until the desired one is selected, then resize with <b>Shift+Arrow keys</b>.
+    <br>All CSS output appears in the textbox at the bottom.<br>
+    You can export or copy-paste this for later use.
   </div>
-  `;
+</div>
+`;
             return;
         }
         if (tab === "global") {
             content.innerHTML = `
-        <div class="atemp-section">
-          <div class="atemp-row">
-            <label class="atemp-label">All Links</label>
-            <input type="color" id="atemp-global-link" value="${globalLinkColor||'#36e6f7'}">
-            <label class="atemp-label">Hover</label>
-            <input type="color" id="atemp-global-link-hover" value="${globalLinkHover||'#8af9ff'}">
-            <button id="atemp-reset-link" class="atemp-btn" style="width:auto">Reset</button>
-          </div>
-          <div class="atemp-row">
-            <label class="atemp-label">All Text</label>
-            <input type="color" id="atemp-global-text" value="${globalTextColor||'#eafaff'}">
-            <button id="atemp-reset-text" class="atemp-btn" style="width:auto">Reset</button>
-          </div>
-        </div>
-        <div class="atemp-tip">These update all link or text colors using CSS rules. Text color does not affect links.</div>
-      `;
+    <div class="atemp-section">
+      <div class="atemp-row">
+        <label class="atemp-label">All Links</label>
+        <input type="color" id="atemp-global-link" value="${globalLinkColor||'#36e6f7'}">
+        <label class="atemp-label">Hover</label>
+        <input type="color" id="atemp-global-link-hover" value="${globalLinkHover||'#8af9ff'}">
+        <button id="atemp-reset-link" class="atemp-btn" style="width:auto">Reset</button>
+      </div>
+      <div class="atemp-row">
+        <label class="atemp-label">All Text</label>
+        <input type="color" id="atemp-global-text" value="${globalTextColor||'#eafaff'}">
+        <button id="atemp-reset-text" class="atemp-btn" style="width:auto">Reset</button>
+      </div>
+    </div>
+    <div class="atemp-tip">These update all link or text colors using CSS rules. Text color does not affect links.</div>
+  `;
             content.querySelector("#atemp-global-link")
                 .oninput = e => {
                     globalLinkColor = e.target.value;
@@ -707,17 +771,17 @@
         }
         if (tab === "inject") {
             content.innerHTML = `
-        <div class="atemp-section">
-          <div class="atemp-label">Paste CSS to inject:</div>
-          <textarea id="atemp-inject-area" placeholder="body { color: cyan; }"></textarea>
-          <button id="atemp-inject" class="atemp-btn" title="Inject this CSS into the page">Inject CSS</button>
-        </div>
-        <div class="atemp-section">
-          <div class="atemp-label">Generate JS Snippet:</div>
-          <button id="atemp-genjs" class="atemp-btn" title="Generate and copy a JS snippet to inject the above CSS">Generate &amp; Copy JS</button>
-          <pre id="atemp-jsout"></pre>
-        </div>
-      `;
+    <div class="atemp-section">
+      <div class="atemp-label">Paste CSS to inject:</div>
+      <textarea id="atemp-inject-area" placeholder="body { color: cyan; }"></textarea>
+      <button id="atemp-inject" class="atemp-btn" title="Inject this CSS into the page">Inject CSS</button>
+    </div>
+    <div class="atemp-section">
+      <div class="atemp-label">Generate JS Snippet:</div>
+      <button id="atemp-genjs" class="atemp-btn" title="Generate and copy a JS snippet to inject the above CSS">Generate &amp; Copy JS</button>
+      <pre id="atemp-jsout"></pre>
+    </div>
+  `;
             content.querySelector("#atemp-inject")
                 .onclick = () => {
                     const css = content.querySelector("#atemp-inject-area")
@@ -745,23 +809,23 @@
         }
         if (tab === "info") {
             content.innerHTML = `
-        <div class="atemp-section">
-          <div class="atemp-label">Selected Element Info</div>
-          ${
-            selected ?
-            `<div class="atemp-selrow"><code>${getSelector(selected)}</code>
-              <button id="atemp-copyselector" class="atemp-btn" style="width:auto;padding:3px 8px;">Copy</button>
-            </div>
-            <div class="atemp-label" style="margin-bottom:3px;">Computed Styles</div>
-            <div class="atemp-computed">${getComputed(selected)}</div>
-            <div class="atemp-label" style="margin-bottom:3px;">Inline Styles</div>
-            <div class="atemp-computed">${getInline(selected)}</div>
-            <button id="atemp-reset" class="atemp-btn">Reset Styles</button>
-            `
-            : `<div class="atemp-tip">Shift+Hover any element to inspect</div>`
-          }
+    <div class="atemp-section">
+      <div class="atemp-label">Selected Element Info</div>
+      ${
+        selected ?
+        `<div class="atemp-selrow"><code>${getSelector(selected)}</code>
+          <button id="atemp-copyselector" class="atemp-btn" style="width:auto;padding:3px 8px;">Copy</button>
         </div>
-      `;
+        <div class="atemp-label" style="margin-bottom:3px;">Computed Styles</div>
+        <div class="atemp-computed">${getComputed(selected)}</div>
+        <div class="atemp-label" style="margin-bottom:3px;">Inline Styles</div>
+        <div class="atemp-computed">${getInline(selected)}</div>
+        <button id="atemp-reset" class="atemp-btn">Reset Styles</button>
+        `
+        : `<div class="atemp-tip">Shift+Hover any element to inspect</div>`
+      }
+    </div>
+  `;
             if (selected) {
                 content.querySelector("#atemp-copyselector")
                     .onclick = () => {
@@ -782,23 +846,35 @@
             html = `<div class="atemp-tip">Hold <b>Shift</b> and hover any element to select and edit its style live.</div>`;
         } else {
             html += `<div class="atemp-label" style="margin-bottom:4px;">
-        <div class="atemp-selrow">
-          <code>${getSelector(selected)}</code>
-          <button id="atemp-copyselector" class="atemp-btn" style="width:auto;padding:2px 7px;">Copy</button>
-        </div>
-      </div>`;
+    <div class="atemp-selrow">
+      <code>${getSelector(selected)}</code>
+      <button id="atemp-copyselector" class="atemp-btn" style="width:auto;padding:2px 7px;">Copy</button>
+    </div>
+  </div>`;
             html += elementBgTextureUI();
             (tabConfig[tab]?.fields || [])
             .forEach(field => {
                 let k = field.k,
                     v = selected.style[k] || "";
-                let type = k.includes("color") ? "color" : (k === "opacity" || k === "zIndex" || k === "fontWeight") ? "number" : "text";
-                html += `<div class="atemp-row">
-          <label class="atemp-label" style="min-width:80px" title="${propertyTips[k]||k}">${k}
-            <span style="color:var(--atemp-aatempent3);font-size:1.08em;cursor:pointer;" data-tt data-k="${k}" tabindex="0">?</span>
-          </label>
-          <input class="atemp-input" id="atemp-${k}" type="${type}" value="${v}">
-        </div>`;
+                let type = field.type || (k.includes("color") ? "color" : (k === "opacity" || k === "zIndex" || k === "fontWeight") ? "number" : "text");
+
+                // Special handling for color inputs
+                if (type === "color") {
+                    html += `<div class="atemp-row">
+                    <label class="atemp-label" style="min-width:80px" title="${propertyTips[k]||k}">${k}
+                        <span style="color:var(--atemp-aatempent3);font-size:1.08em;cursor:pointer;" data-tt data-k="${k}" tabindex="0">?</span>
+                    </label>
+                    <input type="color" id="atemp-${k}-picker" value="${v || '#000000'}" style="width:30px;height:30px;padding:0;">
+                    <input class="atemp-input" id="atemp-${k}" type="text" value="${v}" placeholder="${k}" style="flex:1;">
+                </div>`;
+                } else {
+                    html += `<div class="atemp-row">
+                    <label class="atemp-label" style="min-width:80px" title="${propertyTips[k]||k}">${k}
+                        <span style="color:var(--atemp-aatempent3);font-size:1.08em;cursor:pointer;" data-tt data-k="${k}" tabindex="0">?</span>
+                    </label>
+                    <input class="atemp-input" id="atemp-${k}" type="${type}" value="${v}">
+                </div>`;
+                }
             });
             html += `
         <button id="atemp-apply" class="atemp-btn">Apply Style</button>
@@ -810,6 +886,30 @@
         content.innerHTML = html;
         if (selected) {
             setupElementBgTextureHandlers();
+
+            // Set up color picker synchronization
+            (tabConfig[tab]?.fields || []).forEach(field => {
+                const k = field.k;
+                const type = field.type || (k.includes("color") ? "color" : (k === "opacity" || k === "zIndex" || k === "fontWeight") ? "number" : "text");
+
+                if (type === "color") {
+                    const colorPicker = content.querySelector(`#atemp-${k}-picker`);
+                    const textInput = content.querySelector(`#atemp-${k}`);
+
+                    if (colorPicker && textInput) {
+                        colorPicker.addEventListener('input', (e) => {
+                            textInput.value = e.target.value;
+                        });
+
+                        textInput.addEventListener('input', (e) => {
+                            if (e.target.value.match(/^#([0-9a-f]{3}){1,2}$/i)) {
+                                colorPicker.value = e.target.value;
+                            }
+                        });
+                    }
+                }
+            });
+
             content.querySelector("#atemp-copyselector")
                 .onclick = () => {
                     navigator.clipboard.writeText(getSelector(selected));
