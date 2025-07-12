@@ -40,7 +40,3 @@
 - Shift + X: Toggle move mode  
 - Shift + C: Toggle child movement  
 - Escape: Exit move mode
-
-## Preview
-
-<img src="https://raw.githubusercontent.com/fumeko-ts/Quick-CSS-Live-Editor/refs/heads/main/89743789.png?raw=true" alt="Image">
