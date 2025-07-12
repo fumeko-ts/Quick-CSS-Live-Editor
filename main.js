@@ -1179,7 +1179,7 @@
                 children: []
             };
             root.querySelector("#atemp-title")
-                .textContent = "Cyber CSS Editor";
+                .textContent = "CSS Editor";
             root.style.border = "";
             root.querySelector("#atemp-footer")
                 .textContent = "Shift+Hover to select • Shift+Scroll to cycle • Export to copy";
